@@ -1,0 +1,50 @@
+---command to create a database
+CREATE DATABASE test;
+---go inside the DATABASE
+use test;
+CREATE DATABASE test2;
+---to get idea of number of DATABASE
+SHOW DATABASES;
+---delete a DATABASE
+drop DATABASE test2;
+SHOW DATABASES;
+
+use test;
+
+---create a TABLE
+CREATE table if NOT exists employee(
+    id int,
+    name VARCHAR(50)
+);
+
+---to get idea of number of table
+show TABLES;
+---to check create command for a TABLE
+SHOW CREATE table employee;
+drop TABLE employee;
+---insert into a TABLE
+create Table if NOT exists employee(
+    id INT,
+    name VARCHAR(50),
+    salary DOUBLE,
+    hiring_date DATE
+);
+
+
+---syntax 1 to insert in table
+
+insert into employee VALUES(1,"Samarth",500000,'2023-09-21');
+
+---syntax 2 to insert in table
+
+insert into employee(salary,name,id) VALUES(600000,"Rahul",2);
+
+
+---multiple imsertion of data in TABLE
+
+insert into employee VALUES(3,"Amit",200000,'2022-10-03'),(4,"Shanky",400000,'2021-04-30');
+
+---DDL
+SELECT * FROM employee;
+
+SELECT id,name FROM employee;
