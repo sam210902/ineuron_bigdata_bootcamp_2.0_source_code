@@ -264,4 +264,385 @@ Records: 0  Duplicates: 0  Warnings: 0
 
 mysql> insert into employees values(1,'Samarth','Bsr','BSR');
 ERROR 1062 (23000): Duplicate entry '1' for key 'employees.id_unique'
+
+
+
+
+--- drop constraint from existing TABLE
+alter table employee drop constraint id_unique;
+
+insert into employee values(1,'XYZ', 25, '2021-08-10', 50000, 'Gurgaon');
+
+--- create table with Primary_Key
+
+Create table persons
+(
+    id int, 
+    name varchar(50), 
+    age int,
+    ---Primary Key (id) 
+    constraint pk Primary Key (id) 
+);
+
+insert into persons values(1,'Shashank',29);
+
+--- Try to insert duplicate value for primary key COLUMN
+insert into persons values(1,'Rahul',28);
+
+--- Try to insert null value for primary key COLUMN
+insert into persons values(null,'Rahul',28);
+
+--- To check difference between Primary Key and Unique
+alter table persons add constraint age_unq UNIQUE(age); 
+
+select * from persons;
+
+
+insert into persons values(2,'Rahul',28);
+
+
+insert into persons values(3,'Amit',28);
+
+insert into persons values(3,'Amit',null);
+
+select * from persons;
+
+insert into persons values(4,'Charan',null);
+
+insert into persons values(5,'Deepak',null);
+
+
+--- create tables for Foreign Key demo
+create table customer
+(
+    cust_id int,
+    name VARCHAR(50), 
+    age int,
+    constraint pk Primary Key (cust_id) 
+);
+
+create table orders
+(
+    order_id int,
+    order_num int,
+    customer_id int,
+    constraint pk Primary Key (order_id),
+    constraint fk Foreign Key (customer_id) REFERENCES customer(cust_id)
+);
+
+--- Differen between Drop & Truncate Command
+
+select * from persons;
+truncate table persons;
+
+select * from persons;
+
+drop table persons;
+
+--- Operations with Select Command
+
+select * from employee;
+
+
+drop table employee;
+
+
+create table if not exists employee(
+    id int,
+    name VARCHAR(50),
+    age int,
+    hiring_date date,
+    salary int,
+    city varchar(50)
+);
+
+insert into employee values(1,'Shashank', 24, '2021-08-10', 10000, 'Lucknow');
+
+insert into employee values(2,'Rahul', 25, '2021-08-10', 20000, 'Khajuraho');
+
+insert into employee values(3,'Sunny', 22, '2021-08-11', 11000, 'Bangalore');
+
+insert into employee values(5,'Amit', 25, '2021-08-11', 12000, 'Noida');
+
+insert into employee values(1,'Puneet', 26, '2021-08-12', 50000, 'Gurgaon');
+
+
+select * from employee;
+
+--- how to count total records
+select count(*) from employee;
+
+
+--- alias declaration
+select count(*) as total_row_count from employee;
+
+
+--- display all columns in the final result
+select * from employee;
+
+
+--- display specific columns in the final result
+select name, salary from employee;
+
+
+--- aliases for mutiple columns
+select name as employee_name, salary as employee_salary from employee;
+
+
+select * from employee;
+
+--- print unique hiring_dates from the employee table when employees joined it
+select Distinct(hiring_date) as distinct_hiring_dates from employee;
+
+
+select * from employee;
+
+--- How many unique age values in the table??
+
+select  count(distinct(age)) as total_unique_ages from employee;
+
+--- Increment salary of each employee by 20% and display final result with new salary
+SELECT  id,
+        name,
+        salary as old_salary, 
+        (salary + salary * 0.2) as new_salary
+FROM employee;
+
+
+
+
+#from my comp
+
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 15
+Server version: 8.0.30 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use test;
+Database changed
+mysql> select * from employees;
++------+---------+---------+------+
+| id   | name    | address | city |
++------+---------+---------+------+
+|    1 | Samarth | Bsr     | BSR  |
+|    2 | Shivam  | SB      | SB   |
+|    3 | Aniket  | MS      | MS   |
+|    4 | Sunil   | DM      | DM   |
+|    5 | Krishan | SK      | SK   |
+|    1 | Samarth | Bsr     | BSR  |
+|    1 | Shivam  | SB      | SB   |
+|    1 | Aniket  | MS      | MS   |
+|    1 | Sunil   | DM      | DM   |
+|    1 | Krishan | SK      | SK   |
++------+---------+---------+------+
+10 rows in set (0.00 sec)
+
+mysql> select * from employees where city = 'BSR';
++------+---------+---------+------+
+| id   | name    | address | city |
++------+---------+---------+------+
+|    1 | Samarth | Bsr     | BSR  |
+|    1 | Samarth | Bsr     | BSR  |
++------+---------+---------+------+
+2 rows in set (0.00 sec)
+
+mysql> update employee set city='Banglore' where city='BSR';
+ERROR 1054 (42S22): Unknown column 'city' in 'where clause'
+mysql> update employee set city='Banglore' where city='BSR';
+ERROR 1054 (42S22): Unknown column 'city' in 'where clause'
+mysql> update employee set city='Banglore' where city='SK';
+ERROR 1054 (42S22): Unknown column 'city' in 'where clause'
+mysql> #delete specific record
+mysql> delete from employee where city = 'BSR';
+ERROR 1054 (42S22): Unknown column 'city' in 'where clause'
+mysql> select * from employees where city = 'BSR';
++------+---------+---------+------+
+| id   | name    | address | city |
++------+---------+---------+------+
+|    1 | Samarth | Bsr     | BSR  |
+|    1 | Samarth | Bsr     | BSR  |
++------+---------+---------+------+
+2 rows in set (0.00 sec)
+
+mysql> update employees set city='Banglore' where city='SK';
+Query OK, 2 rows affected (0.04 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+mysql> select * from employees;
++------+---------+---------+----------+
+| id   | name    | address | city     |
++------+---------+---------+----------+
+|    1 | Samarth | Bsr     | BSR      |
+|    2 | Shivam  | SB      | SB       |
+|    3 | Aniket  | MS      | MS       |
+|    4 | Sunil   | DM      | DM       |
+|    5 | Krishan | SK      | Banglore |
+|    1 | Samarth | Bsr     | BSR      |
+|    1 | Shivam  | SB      | SB       |
+|    1 | Aniket  | MS      | MS       |
+|    1 | Sunil   | DM      | DM       |
+|    1 | Krishan | SK      | Banglore |
++------+---------+---------+----------+
+10 rows in set (0.00 sec)
+
+mysql> delete from employees where city = 'Banglore';
+Query OK, 2 rows affected (0.00 sec)
+
+mysql> select * from employees;
++------+---------+---------+------+
+| id   | name    | address | city |
++------+---------+---------+------+
+|    1 | Samarth | Bsr     | BSR  |
+|    2 | Shivam  | SB      | SB   |
+|    3 | Aniket  | MS      | MS   |
+|    4 | Sunil   | DM      | DM   |
+|    1 | Samarth | Bsr     | BSR  |
+|    1 | Shivam  | SB      | SB   |
+|    1 | Aniket  | MS      | MS   |
+|    1 | Sunil   | DM      | DM   |
++------+---------+---------+------+
+8 rows in set (0.00 sec)
+
+mysql> drop table employees;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> create table  employees(id int,name varchar(50),age int,hiring_date date,salary int,city varchar(50));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> insert into employees values(1,'Samarth',20,'2021-09-02',4000,'BSR'),(2,'Shivam',20,'2021-09-10',5000,'SB'),(3,'Aniket',24,'2021-09-12',5000,'MS'),(4,'Sunil',22,'2021-09-21',6000,'DK'),(5,'Krishan',21,'2021-09-30',7000,'SK');
+Query OK, 5 rows affected (0.02 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from employees;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   24 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+5 rows in set (0.00 sec)
+
+mysql> select count(*) from employees;
++----------+
+| count(*) |
++----------+
+|        5 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> #limit records
+mysql> select * from emploees limit = 3;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '= 3' at line 1
+mysql> select * from employees limit = 3;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '= 3' at line 1
+mysql> select * from employees limit 3;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   24 | 2021-09-12  |   5000 | MS   |
++------+---------+------+-------------+--------+------+
+3 rows in set (0.00 sec)
+
+mysql> #arranging our output i.e organizing data
+mysql> select salary from employees orderby;
++--------+
+| salary |
++--------+
+|   4000 |
+|   5000 |
+|   5000 |
+|   6000 |
+|   7000 |
++--------+
+5 rows in set (0.00 sec)
+
+mysql> select salary from employees orderby=desc;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '=desc' at line 1
+mysql> select * from employees order by salary;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   24 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+5 rows in set (0.00 sec)
+
+mysql> select * from employees order by salary desc;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   24 | 2021-09-12  |   5000 | MS   |
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
++------+---------+------+-------------+--------+------+
+5 rows in set (0.00 sec)
+
+mysql> #more than one order by
+mysql> select * from employees order by age , salary desc
+    -> ;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    3 | Aniket  |   24 | 2021-09-12  |   5000 | MS   |
++------+---------+------+-------------+--------+------+
+5 rows in set (0.00 sec)
+
+mysql> write  a query to display the details of employee with max sal
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'write  a query to display the details of employee with max sal' at line 1
+mysql> #write  a query to display the details of employee with max sal
+mysql> select * from employee max(salary);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'max(salary)' at line 1
+mysql> select * from employee where salary = max();
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 1
+mysql> select * from employee where salary = max;
+ERROR 1054 (42S22): Unknown column 'salary' in 'where clause'
+mysql> select * from employees where salary = max;
+ERROR 1054 (42S22): Unknown column 'max' in 'where clause'
+mysql> select * from employees where max(salary);
+ERROR 1111 (HY000): Invalid use of group function
+mysql> select * from employees order by desc limit 1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'desc limit 1' at line 1
+mysql> select * from employees order by desc ,limit 1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'desc ,limit 1' at line 1
+mysql> select * from employees order by salary desc ,limit 1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'limit 1' at line 1
+mysql> select * from employees order by salary desc limit 1;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+1 row in set (0.00 sec)
+
+mysql> select * from employees order by salary  limit 1;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
++------+---------+------+-------------+--------+------+
+1 row in set (0.00 sec)
+
 mysql>
