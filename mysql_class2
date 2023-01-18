@@ -1,0 +1,267 @@
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 8.0.30 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| test               |
++--------------------+
+5 rows in set (0.04 sec)
+
+mysql> use test;
+Database changed
+mysql> show tables;
++----------------+
+| Tables_in_test |
++----------------+
+| employee       |
++----------------+
+1 row in set (0.01 sec)
+
+mysql> describe employee;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int         | YES  |     | NULL    |       |
+| name  | varchar(50) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+mysql> create table if not exists employee(id int,salary double,hiring_date date);
+Query OK, 0 rows affected, 1 warning (0.01 sec)
+
+mysql> create table if not exists employee_with_comnstraints(id int not null,salary double,hiring_date date default '2021-01-01',unique (id),check (salary > 1000);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> create table if not exists employee_with_comnstraints(id int not null,salary double,hiring_date date default '2021-01-01',unique (id),check (salary > 1000));
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> insert into employee_with_constraints(null,'Amit',3000,'2021-09-19');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'null,'Amit',3000,'2021-09-19')' at line 1
+mysql> insert into employee_with_constraints(null,3000,'2021-09-19');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'null,3000,'2021-09-19')' at line 1
+mysql> insert into employee_with_constraints(1,3000,'2021-09-19');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1,3000,'2021-09-19')' at line 1
+mysql> insert into employee_with_constraints values(null,3000,'2021-09-19');
+ERROR 1146 (42S02): Table 'test.employee_with_constraints' doesn't exist
+mysql> insert into employee_with_comnstraints values(null,3000,'2021-09-19');
+ERROR 1048 (23000): Column 'id' cannot be null
+mysql> insert into employee_with_comnstraints values(1,3000,'2021-09-19');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into employee_with_comnstraints values(2,300,'2021-09-19');
+ERROR 3819 (HY000): Check constraint 'employee_with_comnstraints_chk_1' is violated.
+mysql> insert into employee_with_comnstraints values(2,3000,'2021-09-19');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from employee_with_comnstriants;
+ERROR 1146 (42S02): Table 'test.employee_with_comnstriants' doesn't exist
+mysql> select * from employee_with_comnstraints;
++----+--------+-------------+
+| id | salary | hiring_date |
++----+--------+-------------+
+|  1 |   3000 | 2021-09-19  |
+|  2 |   3000 | 2021-09-19  |
++----+--------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> insert into employee_with_comnstraints values(2,3000,null);
+ERROR 1062 (23000): Duplicate entry '2' for key 'employee_with_comnstraints.id'
+mysql> insert into employee_with_comnstraints values(3,3000,null);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from employee_with_comnstraints;
++----+--------+-------------+
+| id | salary | hiring_date |
++----+--------+-------------+
+|  1 |   3000 | 2021-09-19  |
+|  2 |   3000 | 2021-09-19  |
+|  3 |   3000 | NULL        |
++----+--------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> insert into employee_with_comnstraints(id,salary) values(4,3000,);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 1
+mysql> insert into employee_with_comnstraints(id,salary) values(4,3000);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from employee_with_comnstraints;
++----+--------+-------------+
+| id | salary | hiring_date |
++----+--------+-------------+
+|  1 |   3000 | 2021-09-19  |
+|  2 |   3000 | 2021-09-19  |
+|  3 |   3000 | NULL        |
+|  4 |   3000 | 2021-01-01  |
++----+--------+-------------+
+4 rows in set (0.00 sec)
+
+mysql> create table if not exists employee_with_constraints_temp(id int not null,name varchar(50) not null,salary double,hiring_date date default '2021-01-01',constraint unique_id unique (id),constraint salary_check check (salary > 1000));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> insert into employee_with_constraints_temp values(1.'Samarth',500,'2021-09-15');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''Samarth',500,'2021-09-15')' at line 1
+mysql> insert into employee_with_constraints_temp values(1,'Samarth',500,'2021-09-15');
+ERROR 3819 (HY000): Check constraint 'salary_check' is violated.
+mysql> --alter
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--alter' at line 1
+mysql> ceate table employees(id int,name varchar(50),address varchar(50),city varchar(50));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ceate table employees(id int,name varchar(50),address varchar(50),city varchar(5' at line 1
+mysql> create table employees(id int,name varchar(50),address varchar(50),city varchar(50));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> insert into employees value(1,'Samarth','Krishna Nagar','BSR');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from employees;
++------+---------+---------------+------+
+| id   | name    | address       | city |
++------+---------+---------------+------+
+|    1 | Samarth | Krishna Nagar | BSR  |
++------+---------+---------------+------+
+1 row in set (0.00 sec)
+
+mysql> alter table employees add DOB date;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> select * from employees;
++------+---------+---------------+------+------+
+| id   | name    | address       | city | DOB  |
++------+---------+---------------+------+------+
+|    1 | Samarth | Krishna Nagar | BSR  | NULL |
++------+---------+---------------+------+------+
+1 row in set (0.00 sec)
+
+mysql> show create table employees;
++-----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table     | Create Table                                                                                                                                                                                                                                                 |
++-----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| employees | CREATE TABLE `employees` (
+  `id` int DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `DOB` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> #altering length of a varchar feild
+mysql> alter table employees modify column name varchar(100);
+Query OK, 1 row affected (0.04 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> show create table employees;
++-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table     | Create Table                                                                                                                                                                                                                                                  |
++-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| employees | CREATE TABLE `employees` (
+  `id` int DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `DOB` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> #delete column
+mysql> alter table employees drop column city;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> show create table employees;
++-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table     | Create Table                                                                                                                                                                                                               |
++-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| employees | CREATE TABLE `employees` (
+  `id` int DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
+  `DOB` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> #rename
+mysql> alter table employees rename column name to employee_name;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> show create table employees;
++-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table     | Create Table                                                                                                                                                                                                                        |
++-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| employees | CREATE TABLE `employees` (
+  `id` int DEFAULT NULL,
+  `employee_name` varchar(100) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
+  `DOB` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> #truncate table - it only deletes data but not table structure i.e schema will be there
+mysql> #drop table- it delete everything
+mysql> truncate table employees;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> select * from employyes;
+ERROR 1146 (42S02): Table 'test.employyes' doesn't exist
+mysql> select * from employees;
+Empty set (0.00 sec)
+
+mysql> drop table employees;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from employees;
+ERROR 1146 (42S02): Table 'test.employees' doesn't exist
+mysql> create table employees(id int,name varchar(50),address varchar(50),city varchar(50));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> insert into employees values(1,'Samarth','Bsr','BSR'),(2.'Shivam','SB','SB'),(3,'Aniket','MS','MS'),(4,'Sunil','DM','DM'),(5,'Krishan','SK','SK')
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''Shivam','SB','SB'),(3,'Aniket','MS','MS'),(4,'Sunil','DM','DM'),(5,'Krishan','S' at line 1
+mysql> insert into employees values(1,'Samarth','Bsr','BSR'),(2.'Shivam','SB','SB'),(3,'Aniket','MS','MS'),(4,'Sunil','DM','DM'),(5,'Krishan','SK','SK');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''Shivam','SB','SB'),(3,'Aniket','MS','MS'),(4,'Sunil','DM','DM'),(5,'Krishan','S' at line 1
+mysql> insert into employees values(1,'Samarth','Bsr','BSR'),(2,'Shivam','SB','SB'),(3,'Aniket','MS','MS'),(4,'Sunil','DM','DM'),(5,'Krishan','SK','SK');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from employees;
++------+---------+---------+------+
+| id   | name    | address | city |
++------+---------+---------+------+
+|    1 | Samarth | Bsr     | BSR  |
+|    2 | Shivam  | SB      | SB   |
+|    3 | Aniket  | MS      | MS   |
+|    4 | Sunil   | DM      | DM   |
+|    5 | Krishan | SK      | SK   |
++------+---------+---------+------+
+5 rows in set (0.00 sec)
+
+mysql> #applying constraints
+mysql> alter table employees add constraints id_unique UNIQUE(id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'id_unique UNIQUE(id)' at line 1
+mysql> alter table employees add constraint id_unique UNIQUE(id);
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> insert into employees values(1,'Samarth','Bsr','BSR');
+ERROR 1062 (23000): Duplicate entry '1' for key 'employees.id_unique'
+mysql>
