@@ -1,3 +1,4 @@
+Enter password: *************
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 Your MySQL connection id is 16
 Server version: 8.0.30 MySQL Community Server - GPL
@@ -527,3 +528,529 @@ mysql> select country,group_concat(distinct state order by state desc separator 
 +---------+-----------------+---------------------+
 3 rows in set (0.00 sec)
 
+mysql> create table employeess(id int,name varchar(50),salary int);
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> insert into employeess values(1,'Shashank',5000),(2,'Amit',5500),(3,'Rahul',7000),(4,'Rohit',6000),(5,'Nitin',4000),(6,'Sunny',7500)
+    -> ;
+Query OK, 6 rows affected (0.04 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> select * from employeess where salary > in name='Rohit';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'in name='Rohit'' at line 1
+mysql> select * from employeess where salary > (select salary from employeess where name = 'Rohit';
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> select * from employeess where salary > (select salary from employeess where name = 'Rohit');
++------+-------+--------+
+| id   | name  | salary |
++------+-------+--------+
+|    3 | Rahul |   7000 |
+|    6 | Sunny |   7500 |
++------+-------+--------+
+2 rows in set (0.00 sec)
+
+mysql> #subqueries
+mysql> select * from employeess where salary > (select salary from employeess where name = 'Rohit');
++------+-------+--------+
+| id   | name  | salary |
++------+-------+--------+
+|    3 | Rahul |   7000 |
+|    6 | Sunny |   7500 |
++------+-------+--------+
+2 rows in set (0.00 sec)
+
+mysql> #in and not in operator
+mysql> select * from orders_data;
++---------+----------+---------+--------+
+| cust_id | order_id | country | state  |
++---------+----------+---------+--------+
+|       1 |      100 | USA     | Seatle |
+|       2 |      101 | INDIA   | UP     |
+|       2 |      103 | INDIA   | Bihar  |
+|       4 |      108 | USA     | WDC    |
+|       5 |      109 | UK      | London |
+|       4 |      110 | USA     | WDC    |
+|       3 |      120 | INDIA   | AP     |
+|       2 |      121 | INDIA   | Goa    |
+|       1 |      131 | USA     | Seatle |
+|       6 |      142 | USA     | Seatle |
+|       7 |      150 | USA     | Seatle |
++---------+----------+---------+--------+
+11 rows in set (0.00 sec)
+
+mysql> #write a query to find orders placed in seatle or goa
+mysql> select * from orders_data where state="Seatle" or state="Goa";
++---------+----------+---------+--------+
+| cust_id | order_id | country | state  |
++---------+----------+---------+--------+
+|       1 |      100 | USA     | Seatle |
+|       2 |      121 | INDIA   | Goa    |
+|       1 |      131 | USA     | Seatle |
+|       6 |      142 | USA     | Seatle |
+|       7 |      150 | USA     | Seatle |
++---------+----------+---------+--------+
+5 rows in set (0.00 sec)
+
+mysql> #or
+mysql> select * from orders_data where state in ("Seatle" ,"Goa");
++---------+----------+---------+--------+
+| cust_id | order_id | country | state  |
++---------+----------+---------+--------+
+|       1 |      100 | USA     | Seatle |
+|       2 |      121 | INDIA   | Goa    |
+|       1 |      131 | USA     | Seatle |
+|       6 |      142 | USA     | Seatle |
+|       7 |      150 | USA     | Seatle |
++---------+----------+---------+--------+
+5 rows in set (0.00 sec)
+
+mysql> #select * from orders_data where state in (select state from state_data);
+mysql> select * from orders_data where state not in ("Seatle" ,"Goa");
++---------+----------+---------+--------+
+| cust_id | order_id | country | state  |
++---------+----------+---------+--------+
+|       2 |      101 | INDIA   | UP     |
+|       2 |      103 | INDIA   | Bihar  |
+|       4 |      108 | USA     | WDC    |
+|       5 |      109 | UK      | London |
+|       4 |      110 | USA     | WDC    |
+|       3 |      120 | INDIA   | AP     |
++---------+----------+---------+--------+
+6 rows in set (0.00 sec)
+
+mysql> #join operatons
+mysql> #case when statemets
+mysql> create table students(stu_id int,name varchar(50),total_marks int);
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> insert into students values(1,'Shashank',50),(2,'Amit',91),(3,'Rahul',74),(4,'Rohit',65),(5,'Nitin',86),(6,'Sunny',77);
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> select * ,{case when total_marks>=90 then 'A+'
+    -> when total_marks>=85 and total_marks<85 then 'B+'
+    -> when total_marks>=75 and total_marks<; then
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'case when total_marks>=90 then 'A+'
+when total_marks>=85 and total_marks<85 then' at line 1
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'then' at line 1
+mysql> select * ,{case when total_marks>=90 then 'A+'
+    -> when total_marks>=85 and total_marks<90 then 'A'
+    -> when total_marks>=75 and total_marks<85 then 'B+'
+    -> when total_marks>=60 and total_marks<75 then 'B'
+    -> else 'C' end as Grade}
+    -> from students;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'case when total_marks>=90 then 'A+'
+when total_marks>=85 and total_marks<90 then' at line 1
+mysql> select * ,case when total_marks>=90 then 'A+'
+    -> when total_marks>=85 and total_marks<90 then 'A'
+    -> when total_marks>=75 and total_marks<85 then 'B+'
+    -> when total_marks>=60 and total_marks<75 then 'B'
+    -> else 'C' end as Grade
+    -> from students;
++--------+----------+-------------+-------+
+| stu_id | name     | total_marks | Grade |
++--------+----------+-------------+-------+
+|      1 | Shashank |          50 | C     |
+|      2 | Amit     |          91 | A+    |
+|      3 | Rahul    |          74 | B     |
+|      4 | Rohit    |          65 | B     |
+|      5 | Nitin    |          86 | A     |
+|      6 | Sunny    |          77 | B+    |
++--------+----------+-------------+-------+
+6 rows in set (0.00 sec)
+
+mysql> select * from orders_data;
++---------+----------+---------+--------+
+| cust_id | order_id | country | state  |
++---------+----------+---------+--------+
+|       1 |      100 | USA     | Seatle |
+|       2 |      101 | INDIA   | UP     |
+|       2 |      103 | INDIA   | Bihar  |
+|       4 |      108 | USA     | WDC    |
+|       5 |      109 | UK      | London |
+|       4 |      110 | USA     | WDC    |
+|       3 |      120 | INDIA   | AP     |
+|       2 |      121 | INDIA   | Goa    |
+|       1 |      131 | USA     | Seatle |
+|       6 |      142 | USA     | Seatle |
+|       7 |      150 | USA     | Seatle |
++---------+----------+---------+--------+
+11 rows in set (0.00 sec)
+
+mysql> alter table orders_data add continent varchar(50);
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> update orders_data set continent = 'North America' where country = 'USA';
+Query OK, 6 rows affected (0.01 sec)
+Rows matched: 6  Changed: 6  Warnings: 0
+
+mysql> update orders_data set continent = 'Asia' where country = 'INDIA';
+Query OK, 4 rows affected (0.01 sec)
+Rows matched: 4  Changed: 4  Warnings: 0
+
+mysql> update orders_data set continent = 'Europe' where country = 'UK';
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from orders_continent;
+ERROR 1146 (42S02): Table 'test.orders_continent' doesn't exist
+mysql> select * from orders_data;
++---------+----------+---------+--------+---------------+
+| cust_id | order_id | country | state  | continent     |
++---------+----------+---------+--------+---------------+
+|       1 |      100 | USA     | Seatle | North America |
+|       2 |      101 | INDIA   | UP     | Asia          |
+|       2 |      103 | INDIA   | Bihar  | Asia          |
+|       4 |      108 | USA     | WDC    | North America |
+|       5 |      109 | UK      | London | Europe        |
+|       4 |      110 | USA     | WDC    | North America |
+|       3 |      120 | INDIA   | AP     | Asia          |
+|       2 |      121 | INDIA   | Goa    | Asia          |
+|       1 |      131 | USA     | Seatle | North America |
+|       6 |      142 | USA     | Seatle | North America |
+|       7 |      150 | USA     | Seatle | North America |
++---------+----------+---------+--------+---------------+
+11 rows in set (0.00 sec)
+
+mysql> #write a query to print type of each node
+mysql> create table tree(node int,parent int);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> insert into tree values(8,6),(9,6),(4,8),(5,8),(2,9),(1,9);
+Query OK, 6 rows affected (0.04 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> select * from tree;
++------+--------+
+| node | parent |
++------+--------+
+|    8 |      6 |
+|    9 |      6 |
+|    4 |      8 |
+|    5 |      8 |
+|    2 |      9 |
+|    1 |      9 |
++------+--------+
+6 rows in set (0.00 sec)
+
+mysql> select * ,case when node=8 then 'internal'
+    -> when node =9 then 'internal'
+    -> when node=4 then 'leaf'
+    -> when node = 5 then 'leaf'
+    -> else root as type
+    -> from tree;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'as type
+from tree' at line 5
+mysql> select * ,case when node=8 then 'internal'
+    -> when node =9 then 'internal'
+    -> when node=4 then 'leaf'
+    -> when node = 5 then 'leaf'
+    -> else root end as type
+    -> from tree;
+ERROR 1054 (42S22): Unknown column 'root' in 'field list'
+mysql> select * ,case when node=8 then 'internal'
+    -> when node =9 then 'internal'
+    -> when node=4 then 'leaf'
+    -> when node = 5 then 'leaf'
+    -> else 'root' end as type
+    -> from tree;
++------+--------+----------+
+| node | parent | type     |
++------+--------+----------+
+|    8 |      6 | internal |
+|    9 |      6 | internal |
+|    4 |      8 | leaf     |
+|    5 |      8 | leaf     |
+|    2 |      9 | root     |
+|    1 |      9 | root     |
++------+--------+----------+
+6 rows in set (0.00 sec)
+
+mysql> /*sjddj
+   /*> kks*/
+mysql> /*create table tree
+   /*> (
+   /*>     node int,
+   /*>     parent int
+   /*> );
+   /*>
+   /*> insert into tree values (5,8),(9,8),(4,5),(2,9),(1,5),(3,9),(8,null);
+   /*>
+   /*> select * from tree;
+   /*>
+   /*> select node,
+   /*>        CASE
+   /*>             when node not in (select distinct parent from tree where parent is not null) then 'LEAF'
+   /*>             when parent is null then 'ROOT'
+   /*>             else 'INNER'
+   /*>        END as node_type
+   /*> from tree;*/
+mysql> #joins
+mysql> create table orders
+    -> (
+    ->     order_id int,
+    ->     cust_id int,
+    ->     order_dat date,
+    ->     shipper_id int
+    -> );
+ERROR 1050 (42S01): Table 'orders' already exists
+mysql>
+mysql> create table customers
+    -> (
+    ->     cust_id int,
+    ->     cust_name varchar(50),
+    ->     country varchar(50)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> create table shippers
+    -> (
+    ->     ship_id int,
+    ->     shipper_name varchar(50)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> insert into orders values(10308, 2, '2022-09-15', 3);
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> insert into orders values(10309, 30, '2022-09-16', 1);
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> insert into orders values(10310, 41, '2022-09-19', 2);
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql>
+mysql> insert into customers values(1, 'Neel', 'India');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into customers values(2, 'Nitin', 'USA');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into customers values(3, 'Mukesh', 'UK');
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> insert into shippers values(3,'abc');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into shippers values(1,'xyz');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into orders values(10308, 2, '2022-09-15', 3);
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> create table orders
+    ->     -> (
+    ->     ->     order_id int,
+    ->     ->     cust_id int,
+    ->     ->     order_dat date,
+    ->     ->     shipper_id int
+    ->     ->     shipper_id int;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '-> (
+    ->     order_id int,
+    ->     cust_id int,
+    ->     order_dat date,' at line 2
+mysql> create table ecom_data(order_id int,cust_id int,order_date date,shipper_id int);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> insert into ecom_data values(10308, 2, '2022-09-15', 3);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into ecom_data values(10309, 30, '2022-09-16', 1);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into ecom_data values(10310, 41, '2022-09-19', 2);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from ecom_data;
++----------+---------+------------+------------+
+| order_id | cust_id | order_date | shipper_id |
++----------+---------+------------+------------+
+|    10308 |       2 | 2022-09-15 |          3 |
+|    10309 |      30 | 2022-09-16 |          1 |
+|    10310 |      41 | 2022-09-19 |          2 |
++----------+---------+------------+------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from cutomers;
+ERROR 1146 (42S02): Table 'test.cutomers' doesn't exist
+mysql> select * from customers;
++---------+-----------+---------+
+| cust_id | cust_name | country |
++---------+-----------+---------+
+|       1 | Neel      | India   |
+|       2 | Nitin     | USA     |
+|       3 | Mukesh    | UK      |
++---------+-----------+---------+
+3 rows in set (0.00 sec)
+
+mysql> select * from shippers;
++---------+--------------+
+| ship_id | shipper_name |
++---------+--------------+
+|       3 | abc          |
+|       1 | xyz          |
++---------+--------------+
+2 rows in set (0.00 sec)
+
+mysql> #inner join  - Inner joins combine records from two tables whenever there are matching values in a field common to both tables.
+mysql> select e.order_id,c.cust_name from ecom_data e inner join customers c on e.cust_id = c.cust_id;
++----------+-----------+
+| order_id | cust_name |
++----------+-----------+
+|    10308 | Nitin     |
++----------+-----------+
+1 row in set (0.00 sec)
+
+mysql> select e.*,c.* from ecom_data e inner join customers c on e.cust_id = c.cust_id;
++----------+---------+------------+------------+---------+-----------+---------+
+| order_id | cust_id | order_date | shipper_id | cust_id | cust_name | country |
++----------+---------+------------+------------+---------+-----------+---------+
+|    10308 |       2 | 2022-09-15 |          3 |       2 | Nitin     | USA     |
++----------+---------+------------+------------+---------+-----------+---------+
+1 row in set (0.00 sec)
+
+mysql> select e.*,c.* from ecom_data e inner join customers c on e.cust_id = c.cust_id and e.country = c.country;
+ERROR 1054 (42S22): Unknown column 'e.country' in 'on clause'
+mysql> select e.*,c.* from ecom_data e inner join customer c on e.cust_id = c.cust_id and c.country = 'India';
+ERROR 1054 (42S22): Unknown column 'c.country' in 'on clause'
+mysql> select e.*,c.* from ecom_data e inner join customers c on e.cust_id = c.cust_id and c.country = 'India';
+Empty set (0.00 sec)
+
+mysql> #left join - Left Join is a keyword, which is used to select all rows from the left table and also the matched values between the two tables.
+mysql> select e.*,c.* from ecom_data e left join customers c on e.cust_id = c.cust_id;
++----------+---------+------------+------------+---------+-----------+---------+
+| order_id | cust_id | order_date | shipper_id | cust_id | cust_name | country |
++----------+---------+------------+------------+---------+-----------+---------+
+|    10308 |       2 | 2022-09-15 |          3 |       2 | Nitin     | USA     |
+|    10309 |      30 | 2022-09-16 |          1 |    NULL | NULL      | NULL    |
+|    10310 |      41 | 2022-09-19 |          2 |    NULL | NULL      | NULL    |
++----------+---------+------------+------------+---------+-----------+---------+
+3 rows in set (0.00 sec)
+
+mysql> #right join - The RIGHT JOIN command returns all rows from the right table, and the matching records from the left table.
+mysql> select e.*,c.* from ecom_data e rightt join customers c on e.cust_id = c.cust_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'rightt join customers c on e.cust_id = c.cust_id' at line 1
+mysql> select e.*,c.* from ecom_data e right join customers c on e.cust_id = c.cust_id;
++----------+---------+------------+------------+---------+-----------+---------+
+| order_id | cust_id | order_date | shipper_id | cust_id | cust_name | country |
++----------+---------+------------+------------+---------+-----------+---------+
+|     NULL |    NULL | NULL       |       NULL |       1 | Neel      | India   |
+|    10308 |       2 | 2022-09-15 |          3 |       2 | Nitin     | USA     |
+|     NULL |    NULL | NULL       |       NULL |       3 | Mukesh    | UK      |
++----------+---------+------------+------------+---------+-----------+---------+
+3 rows in set (0.00 sec)
+
+mysql> #join more than 1 table together
+mysql> #multitable join
+mysql> select e.*,c.* from ecom_data e inner join customers c on e.cust_id = c.cust_id and e.country = c.country inner join s on e.shipper_id = s.ship_id;
+ERROR 1146 (42S02): Table 'test.s' doesn't exist
+mysql> select e.*,c.* from ecom_data e inner join customers c on e.cust_id = c.cust_id and e.country = c.country inner join shipper s on e.shipper_id = s.ship_id;
+ERROR 1146 (42S02): Table 'test.shipper' doesn't exist
+mysql> select e.*,c.* from ecom_data e inner join customers c on e.cust_id = c.cust_id and e.country = c.country inner join shippers s on e.shipper_id = s.ship_id;
+ERROR 1054 (42S22): Unknown column 'e.country' in 'on clause'
+mysql> select e.*,c.* from ecom_data e inner join customers c on e.cust_id = c.cust_id inner join shippers s on e.shipper_id = s.ship_id;
++----------+---------+------------+------------+---------+-----------+---------+
+| order_id | cust_id | order_date | shipper_id | cust_id | cust_name | country |
++----------+---------+------------+------------+---------+-----------+---------+
+|    10308 |       2 | 2022-09-15 |          3 |       2 | Nitin     | USA     |
++----------+---------+------------+------------+---------+-----------+---------+
+1 row in set (0.00 sec)
+
+mysql> select e.*,c.*,s.* from ecom_data e inner join customers c on e.cust_id = c.cust_id inner join shippers s on e.shipper_id = s.ship_id;
++----------+---------+------------+------------+---------+-----------+---------+---------+--------------+
+| order_id | cust_id | order_date | shipper_id | cust_id | cust_name | country | ship_id | shipper_name |
++----------+---------+------------+------------+---------+-----------+---------+---------+--------------+
+|    10308 |       2 | 2022-09-15 |          3 |       2 | Nitin     | USA     |       3 | abc          |
++----------+---------+------------+------------+---------+-----------+---------+---------+--------------+
+1 row in set (0.00 sec)
+
+mysql> create table employees_full_data
+    -> (
+    ->     emp_id int,
+    ->     name varchar(50),
+    ->     mgr_id int
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql>
+mysql> insert into employees_full_data values(1, 'Shashank', 3);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into employees_full_data values(2, 'Amit', 3);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into employees_full_data values(3, 'Rajesh', 4);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into employees_full_data values(4, 'Ankit', 6);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into employees_full_data values(6, 'Nikhil', null);
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> select * from employees_full_data;
++--------+----------+--------+
+| emp_id | name     | mgr_id |
++--------+----------+--------+
+|      1 | Shashank |      3 |
+|      2 | Amit     |      3 |
+|      3 | Rajesh   |      4 |
+|      4 | Ankit    |      6 |
+|      6 | Nikhil   |   NULL |
++--------+----------+--------+
+5 rows in set (0.00 sec)
+
+mysql> ## Write a query to print the distinct names of managers??
+mysql> #self join
+mysql> select mgr.namae as manager from employees_full_data emp inner join employees_full_data mgr on mgr.mgr_id = emp.emp_id
+    -> ;
+ERROR 1054 (42S22): Unknown column 'mgr.namae' in 'field list'
+mysql> select mgr.name as manager from employees_full_data emp inner join employees_full_data mgr on mgr.mgr_id = emp.emp_id;
++----------+
+| manager  |
++----------+
+| Shashank |
+| Amit     |
+| Rajesh   |
+| Ankit    |
++----------+
+4 rows in set (0.00 sec)
+
+mysql> select emp.*,mgr.* as manager from employees_full_data emp inner join employees_full_data mgr on mgr.mgr_id = emp.emp_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'as manager from employees_full_data emp inner join employees_full_data mgr on mg' at line 1
+mysql> select emp.*,mgr.* from employees_full_data emp inner join employees_full_data mgr on mgr.mgr_id = emp.emp_id;
++--------+--------+--------+--------+----------+--------+
+| emp_id | name   | mgr_id | emp_id | name     | mgr_id |
++--------+--------+--------+--------+----------+--------+
+|      3 | Rajesh |      4 |      1 | Shashank |      3 |
+|      3 | Rajesh |      4 |      2 | Amit     |      3 |
+|      4 | Ankit  |      6 |      3 | Rajesh   |      4 |
+|      6 | Nikhil |   NULL |      4 | Ankit    |      6 |
++--------+--------+--------+--------+----------+--------+
+4 rows in set (0.00 sec)
+
+mysql> select emp.name as manager from employees_full_data emp inner join employees_full_data mgr on mgr.mgr_id = emp.emp_id;
++---------+
+| manager |
++---------+
+| Rajesh  |
+| Rajesh  |
+| Ankit   |
+| Nikhil  |
++---------+
+4 rows in set (0.00 sec)
+
+mysql> select emp.name as manager from employees_full_data emp inner join (select distinct mgr_id from employees_full_data) mgr on mgr.mgr_id = emp.emp_id;
++---------+
+| manager |
++---------+
+| Rajesh  |
+| Ankit   |
+| Nikhil  |
++---------+
+3 rows in set (0.00 sec)
+
+mysql>
