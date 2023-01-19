@@ -1,0 +1,529 @@
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 16
+Server version: 8.0.30 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use test;
+Database changed
+mysql> select * from employees;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   24 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+5 rows in set (0.00 sec)
+
+mysql> select count(*) from employees;
++----------+
+| count(*) |
++----------+
+|        5 |
++----------+
+1 row in set (0.04 sec)
+
+mysql> select distnct() from employees;
+ERROR 1305 (42000): FUNCTION test.distnct does not exist
+mysql> select distnct(age) from employees;
+ERROR 1305 (42000): FUNCTION test.distnct does not exist
+mysql> select distnct age from employees;
+ERROR 1054 (42S22): Unknown column 'distnct' in 'field list'
+mysql> select distinct age from employees;
++------+
+| age  |
++------+
+|   20 |
+|   24 |
+|   22 |
+|   21 |
++------+
+4 rows in set (0.00 sec)
+
+mysql> select count(distinct age) from employees;
++---------------------+
+| count(distinct age) |
++---------------------+
+|                   4 |
++---------------------+
+1 row in set (0.04 sec)
+
+mysql> select count(*) from employees limit 3;
++----------+
+| count(*) |
++----------+
+|        5 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> select * from employees limit 3;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   24 | 2021-09-12  |   5000 | MS   |
++------+---------+------+-------------+--------+------+
+3 rows in set (0.00 sec)
+
+mysql> update employees set age = 23 where id = 3;
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from employees;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+5 rows in set (0.00 sec)
+
+mysql> #mysql class 3
+mysql> #where clause
+mysql> #logical conditions
+mysql> #emp with sal>1000
+mysql> select * from employees where salary>5000;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+2 rows in set (0.00 sec)
+
+mysql> select * from employees where salary>=5000;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+4 rows in set (0.00 sec)
+
+mysql> #not equal to
+mysql> selcet * from employees where age != 20;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'selcet * from employees where age != 20' at line 1
+mysql> select * from employees where age != 20;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+3 rows in set (0.00 sec)
+
+mysql> #not equal to as <>
+mysql> select * from employees where age <> 20;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+3 rows in set (0.00 sec)
+
+mysql> #concatination
+mysql> select * from employees where hiring_date >= 2021-09-10 and salary >=3000;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+5 rows in set, 1 warning (0.04 sec)
+
+mysql> select * from employees where hiring_date > 2021-09-10 and salary >=3000;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+5 rows in set, 1 warning (0.00 sec)
+
+mysql> select * from employees where hiring_date > 2021-09-10 and salary > 3000;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+5 rows in set, 1 warning (0.00 sec)
+
+mysql> select * from employees where hiring_date > 2021-09-10 and salary > 4000;
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK   |
++------+---------+------+-------------+--------+------+
+4 rows in set, 1 warning (0.00 sec)
+
+mysql> #range
+mysql> select * from employees where salary between 5000 and 6000;
++------+--------+------+-------------+--------+------+
+| id   | name   | age  | hiring_date | salary | city |
++------+--------+------+-------------+--------+------+
+|    2 | Shivam |   20 | 2021-09-10  |   5000 | SB   |
+|    3 | Aniket |   23 | 2021-09-12  |   5000 | MS   |
+|    4 | Sunil  |   22 | 2021-09-21  |   6000 | DK   |
++------+--------+------+-------------+--------+------+
+3 rows in set (0.00 sec)
+
+mysql> #regex
+mysql> #like and not like
+mysql> # % - means 0 or more than 0 characters
+mysql> _ - means one character
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '_ - means one character' at line 1
+mysql> #_ - means one character
+mysql> select * from employees where name like 'S%';
++------+---------+------+-------------+--------+------+
+| id   | name    | age  | hiring_date | salary | city |
++------+---------+------+-------------+--------+------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR  |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB   |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK   |
++------+---------+------+-------------+--------+------+
+3 rows in set (0.00 sec)
+
+mysql> select * from employees where name like '_____';
++------+-------+------+-------------+--------+------+
+| id   | name  | age  | hiring_date | salary | city |
++------+-------+------+-------------+--------+------+
+|    4 | Sunil |   22 | 2021-09-21  |   6000 | DK   |
++------+-------+------+-------------+--------+------+
+1 row in set (0.00 sec)
+
+mysql> #write a query where name has only 5 chat
+mysql> select * from employees where name like '_____';
++------+-------+------+-------------+--------+------+
+| id   | name  | age  | hiring_date | salary | city |
++------+-------+------+-------------+--------+------+
+|    4 | Sunil |   22 | 2021-09-21  |   6000 | DK   |
++------+-------+------+-------------+--------+------+
+1 row in set (0.00 sec)
+
+mysql> #or
+mysql> select * from employees where length(name)=5;
++------+-------+------+-------------+--------+------+
+| id   | name  | age  | hiring_date | salary | city |
++------+-------+------+-------------+--------+------+
+|    4 | Sunil |   22 | 2021-09-21  |   6000 | DK   |
++------+-------+------+-------------+--------+------+
+1 row in set (0.00 sec)
+
+mysql> insert into employees value(6,'Kapil',null,'2021-08-10',10000,'Assam'),(11,'Nikhil',30,'2021-08-10',null,'Assam');
+Query OK, 2 rows affected (0.04 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from employees;
++------+---------+------+-------------+--------+-------+
+| id   | name    | age  | hiring_date | salary | city  |
++------+---------+------+-------------+--------+-------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR   |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB    |
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS    |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK    |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK    |
+|    6 | Kapil   | NULL | 2021-08-10  |  10000 | Assam |
+|   11 | Nikhil  |   30 | 2021-08-10  |   NULL | Assam |
++------+---------+------+-------------+--------+-------+
+7 rows in set (0.00 sec)
+
+mysql> #fitering null values
+mysql> select * from employees where salary is null;
++------+--------+------+-------------+--------+-------+
+| id   | name   | age  | hiring_date | salary | city  |
++------+--------+------+-------------+--------+-------+
+|   11 | Nikhil |   30 | 2021-08-10  |   NULL | Assam |
++------+--------+------+-------------+--------+-------+
+1 row in set (0.00 sec)
+
+mysql> select * from employees where salary is not null;
++------+---------+------+-------------+--------+-------+
+| id   | name    | age  | hiring_date | salary | city  |
++------+---------+------+-------------+--------+-------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR   |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB    |
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS    |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK    |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK    |
+|    6 | Kapil   | NULL | 2021-08-10  |  10000 | Assam |
++------+---------+------+-------------+--------+-------+
+6 rows in set (0.00 sec)
+
+mysql> select * from employees where salary,age is null;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ',age is null' at line 1
+mysql> create table orders_data(cust_id int,order_id int,country varchar(50),state varchar(50));
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> insert into orders_data(1,100,'USA','Seatle'),(2,101,'INDIA','UP'),(2,103,'INDIA','Bihar'),(4,108,'USA','WDC'),(5,109,'UK','London'),(4,110,'USA','WDC'),(3,120,'INDIA','AP'),(2,121,'INDIA','Goa'),(1,131,'USA','Seatle'),(6,142,'USA','Seatle'),(7,150,'USA','Seatle');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1,100,'USA','Seatle'),(2,101,'INDIA','UP'),(2,103,'INDIA','Bihar'),(4,108,'USA',' at line 1
+mysql> insert into orders_data values(1,100,'USA','Seatle'),(2,101,'INDIA','UP'),(2,103,'INDIA','Bihar'),(4,108,'USA','WDC'),(5,109,'UK','London'),(4,110,'USA','WDC'),(3,120,'INDIA','AP'),(2,121,'INDIA','Goa'),(1,131,'USA','Seatle'),(6,142,'USA','Seatle'),(7,150,'USA','Seatle');
+Query OK, 11 rows affected (0.01 sec)
+Records: 11  Duplicates: 0  Warnings: 0
+
+mysql> select * from orders_data;
++---------+----------+---------+--------+
+| cust_id | order_id | country | state  |
++---------+----------+---------+--------+
+|       1 |      100 | USA     | Seatle |
+|       2 |      101 | INDIA   | UP     |
+|       2 |      103 | INDIA   | Bihar  |
+|       4 |      108 | USA     | WDC    |
+|       5 |      109 | UK      | London |
+|       4 |      110 | USA     | WDC    |
+|       3 |      120 | INDIA   | AP     |
+|       2 |      121 | INDIA   | Goa    |
+|       1 |      131 | USA     | Seatle |
+|       6 |      142 | USA     | Seatle |
+|       7 |      150 | USA     | Seatle |
++---------+----------+---------+--------+
+11 rows in set (0.00 sec)
+
+mysql> select count(*) from orders_data;
++----------+
+| count(*) |
++----------+
+|       11 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> #grouping groupby
+mysql> select count(distinct country) from employees;
+ERROR 1054 (42S22): Unknown column 'country' in 'field list'
+mysql> select count(distinct country) from orders_data;
++-------------------------+
+| count(distinct country) |
++-------------------------+
+|                       3 |
++-------------------------+
+1 row in set (0.00 sec)
+
+mysql> select country,state count(*) from orders_data group by country;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'count(*) from orders_data group by country' at line 1
+mysql> select country count(*) from orders_data group by country;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'count(*) from orders_data group by country' at line 1
+mysql> select count(*) from orders_data group by country;
++----------+
+| count(*) |
++----------+
+|        6 |
+|        4 |
+|        1 |
++----------+
+3 rows in set (0.00 sec)
+
+mysql> select country, count(*) from orders_data group by country;
++---------+----------+
+| country | count(*) |
++---------+----------+
+| USA     |        6 |
+| INDIA   |        4 |
+| UK      |        1 |
++---------+----------+
+3 rows in set (0.00 sec)
+
+mysql> select country, count(*) as country_wise_order from orders_data group by country;
++---------+--------------------+
+| country | country_wise_order |
++---------+--------------------+
+| USA     |                  6 |
+| INDIA   |                  4 |
+| UK      |                  1 |
++---------+--------------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from employees;
++------+---------+------+-------------+--------+-------+
+| id   | name    | age  | hiring_date | salary | city  |
++------+---------+------+-------------+--------+-------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR   |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB    |
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS    |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK    |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK    |
+|    6 | Kapil   | NULL | 2021-08-10  |  10000 | Assam |
+|   11 | Nikhil  |   30 | 2021-08-10  |   NULL | Assam |
++------+---------+------+-------------+--------+-------+
+7 rows in set (0.00 sec)
+
+mysql> update employees set age=24 where name='Kapil';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> update employees set salary=15000 where name='Nikhil';
+Query OK, 1 row affected (0.02 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from employees;
++------+---------+------+-------------+--------+-------+
+| id   | name    | age  | hiring_date | salary | city  |
++------+---------+------+-------------+--------+-------+
+|    1 | Samarth |   20 | 2021-09-02  |   4000 | BSR   |
+|    2 | Shivam  |   20 | 2021-09-10  |   5000 | SB    |
+|    3 | Aniket  |   23 | 2021-09-12  |   5000 | MS    |
+|    4 | Sunil   |   22 | 2021-09-21  |   6000 | DK    |
+|    5 | Krishan |   21 | 2021-09-30  |   7000 | SK    |
+|    6 | Kapil   |   24 | 2021-08-10  |  10000 | Assam |
+|   11 | Nikhil  |   30 | 2021-08-10  |  15000 | Assam |
++------+---------+------+-------------+--------+-------+
+7 rows in set (0.00 sec)
+
+mysql> select age ,sum(salary) from employees group by age;
++------+-------------+
+| age  | sum(salary) |
++------+-------------+
+|   20 |        9000 |
+|   23 |        5000 |
+|   22 |        6000 |
+|   21 |        7000 |
+|   24 |       10000 |
+|   30 |       15000 |
++------+-------------+
+6 rows in set (0.00 sec)
+
+mysql> #min max etc...
+mysql> select age ,sum(salary),max(salary),min(salary),(avg(salary) from employees group by age;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'from employees group by age' at line 1
+mysql> select age ,sum(salary),max(salary),min(salary),avg(salary) from employees group by age;
++------+-------------+-------------+-------------+-------------+
+| age  | sum(salary) | max(salary) | min(salary) | avg(salary) |
++------+-------------+-------------+-------------+-------------+
+|   20 |        9000 |        5000 |        4000 |   4500.0000 |
+|   23 |        5000 |        5000 |        5000 |   5000.0000 |
+|   22 |        6000 |        6000 |        6000 |   6000.0000 |
+|   21 |        7000 |        7000 |        7000 |   7000.0000 |
+|   24 |       10000 |       10000 |       10000 |  10000.0000 |
+|   30 |       15000 |       15000 |       15000 |  15000.0000 |
++------+-------------+-------------+-------------+-------------+
+6 rows in set (0.04 sec)
+
+mysql> #grouping on more than 1 column
+mysql> select country,select as state_wise_orders from orders_data group by country,state;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'select as state_wise_orders from orders_data group by country,state' at line 1
+mysql> select country,state,count(*) as state_wise_orders from orders_data group by country,state;
++---------+--------+-------------------+
+| country | state  | state_wise_orders |
++---------+--------+-------------------+
+| USA     | Seatle |                 4 |
+| INDIA   | UP     |                 1 |
+| INDIA   | Bihar  |                 1 |
+| USA     | WDC    |                 2 |
+| UK      | London |                 1 |
+| INDIA   | AP     |                 1 |
+| INDIA   | Goa    |                 1 |
++---------+--------+-------------------+
+7 rows in set (0.00 sec)
+
+mysql> select country,state,count(*) as state_wise_orders from orders_data group by country,state group by country;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'group by country' at line 1
+mysql> select country,state,count(*) as state_wise_orders from orders_data group by country,state order by country;
++---------+--------+-------------------+
+| country | state  | state_wise_orders |
++---------+--------+-------------------+
+| INDIA   | AP     |                 1 |
+| INDIA   | Bihar  |                 1 |
+| INDIA   | Goa    |                 1 |
+| INDIA   | UP     |                 1 |
+| UK      | London |                 1 |
+| USA     | Seatle |                 4 |
+| USA     | WDC    |                 2 |
++---------+--------+-------------------+
+7 rows in set (0.04 sec)
+
+mysql> #having with group by
+mysql> select country,state,count(*) as state_wise_orders from orders_data group by country,state having count(*)=1 order by country;
++---------+--------+-------------------+
+| country | state  | state_wise_orders |
++---------+--------+-------------------+
+| INDIA   | AP     |                 1 |
+| INDIA   | Bihar  |                 1 |
+| INDIA   | Goa    |                 1 |
+| INDIA   | UP     |                 1 |
+| UK      | London |                 1 |
++---------+--------+-------------------+
+5 rows in set (0.00 sec)
+
+mysql> #group concat
+mysql> select country,group_concat(state) count(*) as country_wise_orders from orders_data group by country;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'count(*) as country_wise_orders from orders_data group by country' at line 1
+mysql> select country,group_concat(state), count(*) as country_wise_orders from orders_data group by country;
++---------+-------------------------------------+---------------------+
+| country | group_concat(state)                 | country_wise_orders |
++---------+-------------------------------------+---------------------+
+| INDIA   | UP,Bihar,AP,Goa                     |                   4 |
+| UK      | London                              |                   1 |
+| USA     | Seatle,WDC,WDC,Seatle,Seatle,Seatle |                   6 |
++---------+-------------------------------------+---------------------+
+3 rows in set (0.00 sec)
+
+mysql> select country,group_concat(state)as state_data, count(*) as country_wise_orders from orders_data group by country;
++---------+-------------------------------------+---------------------+
+| country | state_data                          | country_wise_orders |
++---------+-------------------------------------+---------------------+
+| INDIA   | UP,Bihar,AP,Goa                     |                   4 |
+| UK      | London                              |                   1 |
+| USA     | Seatle,WDC,WDC,Seatle,Seatle,Seatle |                   6 |
++---------+-------------------------------------+---------------------+
+3 rows in set (0.00 sec)
+
+mysql> select country,group_concat(distinct state)as state_data, count(*) as country_wise_orders from orders_data group by country;
++---------+-----------------+---------------------+
+| country | state_data      | country_wise_orders |
++---------+-----------------+---------------------+
+| INDIA   | AP,Bihar,Goa,UP |                   4 |
+| UK      | London          |                   1 |
+| USA     | Seatle,WDC      |                   6 |
++---------+-----------------+---------------------+
+3 rows in set (0.00 sec)
+
+mysql> select country,group_concat(distinct state order by state desc)as state_data, count(*) as country_wise_orders from orders_data group by country;
++---------+-----------------+---------------------+
+| country | state_data      | country_wise_orders |
++---------+-----------------+---------------------+
+| INDIA   | UP,Goa,Bihar,AP |                   4 |
+| UK      | London          |                   1 |
+| USA     | WDC,Seatle      |                   6 |
++---------+-----------------+---------------------+
+3 rows in set (0.00 sec)
+
+mysql> select country,group_concat(distinct state order by state desc separator '-')as state_data, count(*) as country_wise_orders from orders_data group by country;
++---------+-----------------+---------------------+
+| country | state_data      | country_wise_orders |
++---------+-----------------+---------------------+
+| INDIA   | UP-Goa-Bihar-AP |                   4 |
+| UK      | London          |                   1 |
+| USA     | WDC-Seatle      |                   6 |
++---------+-----------------+---------------------+
+3 rows in set (0.00 sec)
+
