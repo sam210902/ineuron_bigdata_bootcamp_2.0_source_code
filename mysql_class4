@@ -1,0 +1,942 @@
+Enter password: *************
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 9
+Server version: 8.0.30 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> #window function
+mysql> # Window Functions
+mysql> create table shop_sales_data
+    -> (
+    -> sales_date date,
+    -> shop_id varchar(5),
+    -> sales_amount int
+    -> );
+ERROR 1046 (3D000): No database selected
+mysql>
+mysql> insert into shop_sales_data values('2022-02-14','S1',200);
+ERROR 1046 (3D000): No database selected
+mysql> insert into shop_sales_data values('2022-02-15','S1',300);
+ERROR 1046 (3D000): No database selected
+mysql> insert into shop_sales_data values('2022-02-14','S2',600);
+ERROR 1046 (3D000): No database selected
+mysql> insert into shop_sales_data values('2022-02-15','S3',500);
+ERROR 1046 (3D000): No database selected
+mysql> insert into shop_sales_data values('2022-02-18','S1',400);
+ERROR 1046 (3D000): No database selected
+mysql> insert into shop_sales_data values('2022-02-17','S2',250);
+ERROR 1046 (3D000): No database selected
+mysql> insert into shop_sales_data values('2022-02-20','S3',300);
+ERROR 1046 (3D000): No database selected
+mysql> use test
+Database changed
+mysql> # Window Functions
+mysql> create table shop_sales_data
+    -> (
+    -> sales_date date,
+    -> shop_id varchar(5),
+    -> sales_amount int
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql>
+mysql> insert into shop_sales_data values('2022-02-14','S1',200);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into shop_sales_data values('2022-02-15','S1',300);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into shop_sales_data values('2022-02-14','S2',600);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into shop_sales_data values('2022-02-15','S3',500);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into shop_sales_data values('2022-02-18','S1',400);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into shop_sales_data values('2022-02-17','S2',250);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into shop_sales_data values('2022-02-20','S3',300);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from shop_sales_data;
++------------+---------+--------------+
+| sales_date | shop_id | sales_amount |
++------------+---------+--------------+
+| 2022-02-14 | S1      |          200 |
+| 2022-02-15 | S1      |          300 |
+| 2022-02-14 | S2      |          600 |
+| 2022-02-15 | S3      |          500 |
+| 2022-02-18 | S1      |          400 |
+| 2022-02-17 | S2      |          250 |
+| 2022-02-20 | S3      |          300 |
++------------+---------+--------------+
+7 rows in set (0.04 sec)
+
+mysql> #window function
+mysql> select shop_id sum(sales_amount) from shop_sales_data group by shop_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'sum(sales_amount) from shop_sales_data group by shop_id' at line 1
+mysql> select shop_id ,sum(sales_amount) from shop_sales_data group by shop_id;
++---------+-------------------+
+| shop_id | sum(sales_amount) |
++---------+-------------------+
+| S1      |               900 |
+| S2      |               850 |
+| S3      |               800 |
++---------+-------------------+
+3 rows in set (0.02 sec)
+
+mysql> #partiton by
+mysql> select *,
+    -> sum(sales_amount) over(partition by shop_id) as total_sales
+    -> from shop_sales_data;
++------------+---------+--------------+-------------+
+| sales_date | shop_id | sales_amount | total_sales |
++------------+---------+--------------+-------------+
+| 2022-02-14 | S1      |          200 |         900 |
+| 2022-02-15 | S1      |          300 |         900 |
+| 2022-02-18 | S1      |          400 |         900 |
+| 2022-02-14 | S2      |          600 |         850 |
+| 2022-02-17 | S2      |          250 |         850 |
+| 2022-02-15 | S3      |          500 |         800 |
+| 2022-02-20 | S3      |          300 |         800 |
++------------+---------+--------------+-------------+
+7 rows in set (0.01 sec)
+
+mysql>  select *,
+    ->     -> sum(sales_amount) over(partition by shop_id) as total_sales
+    -> sum(sales_amount) over(partition by shop_id) as total_sales
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '-> sum(sales_amount) over(partition by shop_id) as total_sales
+sum(sales_amount)' at line 2
+mysql>  select *,
+    -> sum(sales_amount) over(order by sales_date) as total_saless
+    -> from shop_sales_data;
++------------+---------+--------------+--------------+
+| sales_date | shop_id | sales_amount | total_saless |
++------------+---------+--------------+--------------+
+| 2022-02-14 | S1      |          200 |          800 |
+| 2022-02-14 | S2      |          600 |          800 |
+| 2022-02-15 | S1      |          300 |         1600 |
+| 2022-02-15 | S3      |          500 |         1600 |
+| 2022-02-17 | S2      |          250 |         1850 |
+| 2022-02-18 | S1      |          400 |         2250 |
+| 2022-02-20 | S3      |          300 |         2550 |
++------------+---------+--------------+--------------+
+7 rows in set (0.00 sec)
+
+mysql> select *,
+    -> sum(sales_amount) over() as total_sales
+    -> from shop_sales_data;
++------------+---------+--------------+-------------+
+| sales_date | shop_id | sales_amount | total_sales |
++------------+---------+--------------+-------------+
+| 2022-02-14 | S1      |          200 |        2550 |
+| 2022-02-15 | S1      |          300 |        2550 |
+| 2022-02-14 | S2      |          600 |        2550 |
+| 2022-02-15 | S3      |          500 |        2550 |
+| 2022-02-18 | S1      |          400 |        2550 |
+| 2022-02-17 | S2      |          250 |        2550 |
+| 2022-02-20 | S3      |          300 |        2550 |
++------------+---------+--------------+-------------+
+7 rows in set (0.00 sec)
+
+mysql>  select *,
+    -> sum(sales_amount) over(partition by shop_id) as total_sales
+    -> from shop_sales_data;
++------------+---------+--------------+-------------+
+| sales_date | shop_id | sales_amount | total_sales |
++------------+---------+--------------+-------------+
+| 2022-02-14 | S1      |          200 |         900 |
+| 2022-02-15 | S1      |          300 |         900 |
+| 2022-02-18 | S1      |          400 |         900 |
+| 2022-02-14 | S2      |          600 |         850 |
+| 2022-02-17 | S2      |          250 |         850 |
+| 2022-02-15 | S3      |          500 |         800 |
+| 2022-02-20 | S3      |          300 |         800 |
++------------+---------+--------------+-------------+
+7 rows in set (0.00 sec)
+
+mysql> select *,
+    -> sum(sales_amount) oer(partition by shop_id) as total_sales
+    -> from shop_sales_;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(partition by shop_id) as total_sales
+from shop_sales_' at line 2
+mysql> select *,
+    -> sum(sales_amount) over(partition by shop_id order by sales_date) as total_sum_of_sales
+    -> from shop_sales_data;
++------------+---------+--------------+--------------------+
+| sales_date | shop_id | sales_amount | total_sum_of_sales |
++------------+---------+--------------+--------------------+
+| 2022-02-14 | S1      |          200 |                200 |
+| 2022-02-15 | S1      |          300 |                500 |
+| 2022-02-18 | S1      |          400 |                900 |
+| 2022-02-14 | S2      |          600 |                600 |
+| 2022-02-17 | S2      |          250 |                850 |
+| 2022-02-15 | S3      |          500 |                500 |
+| 2022-02-20 | S3      |          300 |                800 |
++------------+---------+--------------+--------------------+
+7 rows in set (0.00 sec)
+
+mysql> select *,
+    -> sum(sales_amount) over(partition by shop_id order by sales_date desc) as total_sum_of_sales
+    -> from shop_sales_data;
++------------+---------+--------------+--------------------+
+| sales_date | shop_id | sales_amount | total_sum_of_sales |
++------------+---------+--------------+--------------------+
+| 2022-02-18 | S1      |          400 |                400 |
+| 2022-02-15 | S1      |          300 |                700 |
+| 2022-02-14 | S1      |          200 |                900 |
+| 2022-02-17 | S2      |          250 |                250 |
+| 2022-02-14 | S2      |          600 |                850 |
+| 2022-02-20 | S3      |          300 |                300 |
+| 2022-02-15 | S3      |          500 |                800 |
++------------+---------+--------------+--------------------+
+7 rows in set (0.00 sec)
+
+mysql> #above is an example of running sum
+mysql> select *,
+    -> sum(sales_amount) over(partition by shop_id order by sales_date) as running_sum_of_sales
+    -> sum(sales_amount) over(partition by shop_id or select *,der by sales_date) as running_sum_of_sales
+    ->     -> sum(sales_amount) over(partition by shop_id) as total_sales
+    ->     -> from shop_sales_data;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'sum(sales_amount) over(partition by shop_id or select *,der by sales_date) as ru' at line 3
+mysql> select *,
+    -> sum(sales_amount) over(partition by shop_id order by sales_date desc) as running_sum_of_sales
+    -> avg(sales_amount) over(partition by shop_id order by sales_date desc) as running_avg_of_sales
+    -> from shop_sales_data;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'avg(sales_amount) over(partition by shop_id order by sales_date desc) as running' at line 3
+mysql> select *,
+    -> sum(sales_amount) over(partition by shop_id order by sales_date) as running_sum_of_sales
+    -> sum;(sales_amount) over(partition by shop_id order by sales_date) as running_avg_of_sales
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'sum' at line 3
+    -> select *,
+    -> sum(sales_amount) over(partition by shop_id order by sales_date desc) as running_sum_of_sales,
+    -> avg(sales_amount) over(partition by shop_id order by sales_date) as running_avg_of_sales
+    -> from shop_sales_data;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'sales_amount) over(partition by shop_id order by sales_date) as running_avg_of_s' at line 1
+mysql> select *,
+    -> sum(sales_amount) over(partition by shop_id order by sales_date desc) as running_sum_of_sales,
+    -> avg(sales_amount) over(partition by shop_id order by sales_date desc) as running_avg_of_sales,
+    -> from shop_sales_data;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'from shop_sales_data' at line 4
+mysql> select *,sum(sales_amount) over(partition by shop_id order by sales_date desc) as running_sum_of_sales,avg(sales_amount) over(partition by shop_id order by sales_date desc) as running_avg_of_sales from shop_sales_data;
++------------+---------+--------------+----------------------+----------------------+
+| sales_date | shop_id | sales_amount | running_sum_of_sales | running_avg_of_sales |
++------------+---------+--------------+----------------------+----------------------+
+| 2022-02-18 | S1      |          400 |                  400 |             400.0000 |
+| 2022-02-15 | S1      |          300 |                  700 |             350.0000 |
+| 2022-02-14 | S1      |          200 |                  900 |             300.0000 |
+| 2022-02-17 | S2      |          250 |                  250 |             250.0000 |
+| 2022-02-14 | S2      |          600 |                  850 |             425.0000 |
+| 2022-02-20 | S3      |          300 |                  300 |             300.0000 |
+| 2022-02-15 | S3      |          500 |                  800 |             400.0000 |
++------------+---------+--------------+----------------------+----------------------+
+7 rows in set (0.01 sec)
+
+mysql> select *,sum(sales_amount) over(partition by shop_id order by sales_date desc) as running_sum_of_sales,avg(sales_amount) over(partition by shop_id order by sales_date desc) as running_avg_of_sales from shop_sales_data;
++------------+---------+--------------+----------------------+----------------------+
+| sales_date | shop_id | sales_amount | running_sum_of_sales | running_avg_of_sales |
++------------+---------+--------------+----------------------+----------------------+
+| 2022-02-18 | S1      |          400 |                  400 |             400.0000 |
+| 2022-02-15 | S1      |          300 |                  700 |             350.0000 |
+| 2022-02-14 | S1      |          200 |                  900 |             300.0000 |
+| 2022-02-17 | S2      |          250 |                  250 |             250.0000 |
+| 2022-02-14 | S2      |          600 |                  850 |             425.0000 |
+| 2022-02-20 | S3      |          300 |                  300 |             300.0000 |
+| 2022-02-15 | S3      |          500 |                  800 |             400.0000 |
++------------+---------+--------------+----------------------+----------------------+
+7 rows in set (0.00 sec)
+
+mysql>  select *,sum(sales_amount) over(partition by shop_id order by sales_date desc) as running_sum_of_sales,avg(sales_amount) over(partition by shop_id order by sales_date desc) as running_avg_of_sales,max(sales_amount) over(partition by shop_id order by sales_date desc) as running_max_of_sales,min(sales_amount) over(partition by shop_id order by sales_date desc) as running_min_of_sales from shop_sales_data;
++------------+---------+--------------+----------------------+----------------------+----------------------+----------------------+
+| sales_date | shop_id | sales_amount | running_sum_of_sales | running_avg_of_sales | running_max_of_sales | running_min_of_sales |
++------------+---------+--------------+----------------------+----------------------+----------------------+----------------------+
+| 2022-02-18 | S1      |          400 |                  400 |             400.0000 |                  400 |                  400 |
+| 2022-02-15 | S1      |          300 |                  700 |             350.0000 |                  400 |                  300 |
+| 2022-02-14 | S1      |          200 |                  900 |             300.0000 |                  400 |                  200 |
+| 2022-02-17 | S2      |          250 |                  250 |             250.0000 |                  250 |                  250 |
+| 2022-02-14 | S2      |          600 |                  850 |             425.0000 |                  600 |                  250 |
+| 2022-02-20 | S3      |          300 |                  300 |             300.0000 |                  300 |                  300 |
+| 2022-02-15 | S3      |          500 |                  800 |             400.0000 |                  500 |                  300 |
++------------+---------+--------------+----------------------+----------------------+----------------------+----------------------+
+7 rows in set (0.01 sec)
+
+mysql> create table amazon_sales_data(    sales_date date,    sales_amount int);insert into amazon_sales_data values('2022-08-21',500);insert into amazon_sales_data values('2022-08-22',600);insert into amazon_sales_data values('2022-08-19',300);insert into amazon_sales_data values('2022-08-18',200);insert into amazon_sales_data values('2022-08-25',800);
+Query OK, 0 rows affected (0.03 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from amazon_sales_data;
++------------+--------------+
+| sales_date | sales_amount |
++------------+--------------+
+| 2022-08-21 |          500 |
+| 2022-08-22 |          600 |
+| 2022-08-19 |          300 |
+| 2022-08-18 |          200 |
+| 2022-08-25 |          800 |
++------------+--------------+
+5 rows in set (0.00 sec)
+
+mysql> select*,
+    -> avg(sales_amount) over(order by sales_date) as rolling_avg,
+    -> sum(sales_amount) over(order by sales_date) as rolling_sum
+    -> from amazon_sales_data;
++------------+--------------+-------------+-------------+
+| sales_date | sales_amount | rolling_avg | rolling_sum |
++------------+--------------+-------------+-------------+
+| 2022-08-18 |          200 |    200.0000 |         200 |
+| 2022-08-19 |          300 |    250.0000 |         500 |
+| 2022-08-21 |          500 |    333.3333 |        1000 |
+| 2022-08-22 |          600 |    400.0000 |        1600 |
+| 2022-08-25 |          800 |    480.0000 |        2400 |
++------------+--------------+-------------+-------------+
+5 rows in set (0.01 sec)
+
+mysql> insert into shop_sales_data values('2022-02-19','S1',400);insert into shop_sales_data values('2022-02-20','S1',400);insert into shop_sales_data values('2022-02-22','S1',300);insert into shop_sales_data values('2022-02-25','S1',200);insert into shop_sales_data values('2022-02-15','S2',600);insert into shop_sales_data values('2022-02-16','S2',600);insert into shop_sales_data values('2022-02-16','S3',500);insert into shop_sales_data values('2022-02-18','S3',500);insert into shop_sales_data values('2022-02-19','S3',300);
+Query OK, 1 row affected (0.04 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from shop_sales_data;
++------------+---------+--------------+
+| sales_date | shop_id | sales_amount |
++------------+---------+--------------+
+| 2022-02-14 | S1      |          200 |
+| 2022-02-15 | S1      |          300 |
+| 2022-02-14 | S2      |          600 |
+| 2022-02-15 | S3      |          500 |
+| 2022-02-18 | S1      |          400 |
+| 2022-02-17 | S2      |          250 |
+| 2022-02-20 | S3      |          300 |
+| 2022-02-19 | S1      |          400 |
+| 2022-02-20 | S1      |          400 |
+| 2022-02-22 | S1      |          300 |
+| 2022-02-25 | S1      |          200 |
+| 2022-02-15 | S2      |          600 |
+| 2022-02-16 | S2      |          600 |
+| 2022-02-16 | S3      |          500 |
+| 2022-02-18 | S3      |          500 |
+| 2022-02-19 | S3      |          300 |
++------------+---------+--------------+
+16 rows in set (0.00 sec)
+
+mysql> select *,
+    -> row_number() over(partition by shop_id order by sales_amount desc) as rows_num,
+    -> rank() over(partition by shop_id over by sales_amount desc) as rank_val,
+    -> dense_rank() oveer(partition by shop_id over by sales_amount desc) as dense_rank_val
+    -> from * shop_sales_data;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'over by sales_amount desc) as rank_val,
+dense_rank() oveer(partition by shop_id ' at line 3
+mysql> select *,
+    -> row_number() over(partition by shop_id order by sales_amount desc) as rows_num,
+    -> rank() over(partition by shop_id over by sales_amount desc) as rank_val,
+    -> dense_rank() over(partition by shop_id over by sales_amount desc) as dense_rank_val
+    -> from * shop_sales_data;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'over by sales_amount desc) as rank_val,
+dense_rank() over(partition by shop_id o' at line 3
+mysql> select *,
+    -> row_number() over(partition by shop_id order by sales_amount desc) as rows_num,
+    -> rank() over(partition by shop_id order by sales_amount desc) as rank_val,
+    -> dense_rank() over(partition by shop_id order by sales_amount desc) as dense_rank_val
+    -> from * shop_sales_data;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '* shop_sales_data' at line 5
+mysql> select *,
+    -> row_number() over(partition by shop_id order by sales_amount desc) as rows_num,
+    -> rank() over(partition by shop_id over by sales_amount desc) as rank_val,
+    -> dense_rank() oveer(partition by shop_id over by sales_amount desc) as dense_rank_val
+    -> from shop_sales_data;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'over by sales_amount desc) as rank_val,
+dense_rank() oveer(partition by shop_id ' at line 3
+mysql> select *,
+    -> row_number() over(partition by shop_id order by sales_amount desc) as rows_num,
+    -> rank() over(partition by shop_id order by sales_amount desc) as rank_val,
+    -> dense_rank() over(partition by shop_id order by sales_amount desc) as dense_rank_val
+    -> from shop_sales_data;
++------------+---------+--------------+----------+----------+----------------+
+| sales_date | shop_id | sales_amount | rows_num | rank_val | dense_rank_val |
++------------+---------+--------------+----------+----------+----------------+
+| 2022-02-18 | S1      |          400 |        1 |        1 |              1 |
+| 2022-02-19 | S1      |          400 |        2 |        1 |              1 |
+| 2022-02-20 | S1      |          400 |        3 |        1 |              1 |
+| 2022-02-15 | S1      |          300 |        4 |        4 |              2 |
+| 2022-02-22 | S1      |          300 |        5 |        4 |              2 |
+| 2022-02-14 | S1      |          200 |        6 |        6 |              3 |
+| 2022-02-25 | S1      |          200 |        7 |        6 |              3 |
+| 2022-02-14 | S2      |          600 |        1 |        1 |              1 |
+| 2022-02-15 | S2      |          600 |        2 |        1 |              1 |
+| 2022-02-16 | S2      |          600 |        3 |        1 |              1 |
+| 2022-02-17 | S2      |          250 |        4 |        4 |              2 |
+| 2022-02-15 | S3      |          500 |        1 |        1 |              1 |
+| 2022-02-16 | S3      |          500 |        2 |        1 |              1 |
+| 2022-02-18 | S3      |          500 |        3 |        1 |              1 |
+| 2022-02-20 | S3      |          300 |        4 |        4 |              2 |
+| 2022-02-19 | S3      |          300 |        5 |        4 |              2 |
++------------+---------+--------------+----------+----------+----------------+
+16 rows in set (0.04 sec)
+
+mysql> create table employeees(    emp_id int,    salary int,    dept_name VARCHAR(30));insert into employees values(1,10000,'Software');insert into employees values(2,11000,'Software');insert into employees values(3,11000,'Software');insert into employees values(4,11000,'Software');insert into employees values(5,15000,'Finance');insert into employees values(6,15000,'Finance');insert into employees values(7,15000,'IT');insert into employees values(8,12000,'HR');insert into employees values(9,12000,'HR');insert into employees values(10,11000,'HR');
+Query OK, 0 rows affected (0.02 sec)
+
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> create table employeees(    emp_id int,    salary int,    dept_name VARCHAR(30));insert into employees values(1,10000,'Software');insert into employees values(2,11000,'Software');insert into employees values(3,11000,'Software');insert into employees values(4,11000,'Software');insert into employees values(5,15000,'Finance');insert into employees values(6,15000,'Finance');insert into employees values(7,15000,'IT');insert into employees values(8,12000,'HR');insert into employees values(9,12000,'HR');insert into employees values(10,11000,'HR');
+ERROR 1050 (42S01): Table 'employeees' already exists
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+mysql> create table employeess(    emp_id int,    salary int,    dept_name VARCHAR(30));insert into employeess values(1,10000,'Software');insert into employeess values(2,11000,'Software');insert into employeess values(3,11000,'Software');insert into employeess values(4,11000,'Software');insert into employeess values(5,15000,'Finance');insert into employeess values(6,15000,'Finance');insert into employeess values(7,15000,'IT');insert into employeess values(8,12000,'HR');insert into employeess values(9,12000,'HR');insert into employeess values(10,11000,'HR');
+ERROR 1050 (42S01): Table 'employeess' already exists
+ERROR 1366 (HY000): Incorrect integer value: 'Software' for column 'salary' at row 1
+ERROR 1366 (HY000): Incorrect integer value: 'Software' for column 'salary' at row 1
+ERROR 1366 (HY000): Incorrect integer value: 'Software' for column 'salary' at row 1
+ERROR 1366 (HY000): Incorrect integer value: 'Software' for column 'salary' at row 1
+ERROR 1366 (HY000): Incorrect integer value: 'Finance' for column 'salary' at row 1
+ERROR 1366 (HY000): Incorrect integer value: 'Finance' for column 'salary' at row 1
+ERROR 1366 (HY000): Incorrect integer value: 'IT' for column 'salary' at row 1
+ERROR 1366 (HY000): Incorrect integer value: 'HR' for column 'salary' at row 1
+ERROR 1366 (HY000): Incorrect integer value: 'HR' for column 'salary' at row 1
+ERROR 1366 (HY000): Incorrect integer value: 'HR' for column 'salary' at row 1
+mysql> create table employeess(emp_id int,salary int,dept_name VARCHAR(30));
+ERROR 1050 (42S01): Table 'employeess' already exists
+mysql> create table employeeesss(emp_id int,salary int,dept_name VARCHAR(30));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> insert into employeeesss values(1,10000,'Software');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into employeeessss values(2,11000,'Software');insert into employeeessss values(3,11000,'Software');insert into employeeessss values(4,11000,'Software');insert into employeeessss values(5,15000,'Finance');insert into employeeessss values(6,15000,'Finance');insert into employeeessss values(7,15000,'IT');insert into employeeessss values(8,12000,'HR');insert into employeeessss values(9,12000,'HR');insert into employeeessss values(10,11000,'HR');
+ERROR 1146 (42S02): Table 'test.employeeessss' doesn't exist
+ERROR 1146 (42S02): Table 'test.employeeessss' doesn't exist
+ERROR 1146 (42S02): Table 'test.employeeessss' doesn't exist
+ERROR 1146 (42S02): Table 'test.employeeessss' doesn't exist
+ERROR 1146 (42S02): Table 'test.employeeessss' doesn't exist
+ERROR 1146 (42S02): Table 'test.employeeessss' doesn't exist
+ERROR 1146 (42S02): Table 'test.employeeessss' doesn't exist
+ERROR 1146 (42S02): Table 'test.employeeessss' doesn't exist
+ERROR 1146 (42S02): Table 'test.employeeessss' doesn't exist
+mysql> insert into employeeesss values(2,11000,'Software');insert into employeeesss values(3,11000,'Software');insert into employeeesss values(4,11000,'Software');insert into employeeesss values(5,15000,'Finance');insert into employeeesss values(6,15000,'Finance');insert into employeeesss values(7,15000,'IT');insert into employeeesss values(8,12000,'HR');insert into employeeesss values(9,12000,'HR');insert into employeeesss values(10,11000,'HR');
+Query OK, 1 row affected (0.04 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from employeeesss;
++--------+--------+-----------+
+| emp_id | salary | dept_name |
++--------+--------+-----------+
+|      1 |  10000 | Software  |
+|      2 |  11000 | Software  |
+|      3 |  11000 | Software  |
+|      4 |  11000 | Software  |
+|      5 |  15000 | Finance   |
+|      6 |  15000 | Finance   |
+|      7 |  15000 | IT        |
+|      8 |  12000 | HR        |
+|      9 |  12000 | HR        |
+|     10 |  11000 | HR        |
++--------+--------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> # Query - get one employee from each department who is getting maximum salary (employee can be random if salary is same)
+mysql> select *,
+    -> max(salary) over(partition by dept_name) as max_salary
+    -> from employeeesss;
++--------+--------+-----------+------------+
+| emp_id | salary | dept_name | max_salary |
++--------+--------+-----------+------------+
+|      5 |  15000 | Finance   |      15000 |
+|      6 |  15000 | Finance   |      15000 |
+|      8 |  12000 | HR        |      12000 |
+|      9 |  12000 | HR        |      12000 |
+|     10 |  11000 | HR        |      12000 |
+|      7 |  15000 | IT        |      15000 |
+|      1 |  10000 | Software  |      11000 |
+|      2 |  11000 | Software  |      11000 |
+|      3 |  11000 | Software  |      11000 |
+|      4 |  11000 | Software  |      11000 |
++--------+--------+-----------+------------+
+10 rows in set (0.00 sec)
+
+mysql> select *,
+    -> max(salary) over(partition by dept_name order by salary) as max_salary
+    -> from employeeesss;
++--------+--------+-----------+------------+
+| emp_id | salary | dept_name | max_salary |
++--------+--------+-----------+------------+
+|      5 |  15000 | Finance   |      15000 |
+|      6 |  15000 | Finance   |      15000 |
+|     10 |  11000 | HR        |      11000 |
+|      8 |  12000 | HR        |      12000 |
+|      9 |  12000 | HR        |      12000 |
+|      7 |  15000 | IT        |      15000 |
+|      1 |  10000 | Software  |      10000 |
+|      2 |  11000 | Software  |      11000 |
+|      3 |  11000 | Software  |      11000 |
+|      4 |  11000 | Software  |      11000 |
++--------+--------+-----------+------------+
+10 rows in set (0.00 sec)
+
+mysql> select *,
+    -> max(salary) over(partition by deppt_name order by id) as max_salary
+    -> from employeeesss;
+ERROR 1054 (42S22): Unknown column 'deppt_name' in 'window partition by'
+mysql> select *,
+    -> max(salary) over(partition by dept_name order by id) as max_salary
+    -> from employeeesss;
+ERROR 1054 (42S22): Unknown column 'id' in 'window order by'
+mysql> select *,
+    -> max(salary) over(partition by deppt_name order by emp_id) as max_salary
+    -> from employeeesss;
+ERROR 1054 (42S22): Unknown column 'deppt_name' in 'window partition by'
+mysql> select *,
+    -> max(salary) over(partition by dept_name order by emp_id) as max_salary
+    -> from employeeesss;
++--------+--------+-----------+------------+
+| emp_id | salary | dept_name | max_salary |
++--------+--------+-----------+------------+
+|      5 |  15000 | Finance   |      15000 |
+|      6 |  15000 | Finance   |      15000 |
+|      8 |  12000 | HR        |      12000 |
+|      9 |  12000 | HR        |      12000 |
+|     10 |  11000 | HR        |      12000 |
+|      7 |  15000 | IT        |      15000 |
+|      1 |  10000 | Software  |      10000 |
+|      2 |  11000 | Software  |      11000 |
+|      3 |  11000 | Software  |      11000 |
+|      4 |  11000 | Software  |      11000 |
++--------+--------+-----------+------------+
+10 rows in set (0.00 sec)
+
+mysql> select *,
+    -> from(select * , row_number over(partiton by dept_name order by salary desc) as sal_rank from employeeesss)
+    -> where sal_rank=1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'from(select * , row_number over(partiton by dept_name order by salary desc) as s' at line 2
+mysql> select *
+    -> from(select * , row_number over(partiton by dept_name order by salary desc) as sal_rank from employeeesss)
+    -> where sal_rank=1;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'over(partiton by dept_name order by salary desc) as sal_rank from employeeesss)
+' at line 2
+mysql> select * from(select *,row_number() over(partition by dept_name order by salary desc) as sal_rank from employeeesss) as temp where sal_rank=1;
++--------+--------+-----------+----------+
+| emp_id | salary | dept_name | sal_rank |
++--------+--------+-----------+----------+
+|      5 |  15000 | Finance   |        1 |
+|      8 |  12000 | HR        |        1 |
+|      7 |  15000 | IT        |        1 |
+|      2 |  11000 | Software  |        1 |
++--------+--------+-----------+----------+
+4 rows in set (0.04 sec)
+
+mysql> select *,row_number() over(partition by dept_name order by salary desc) as sal_rank from employeeesss;
++--------+--------+-----------+----------+
+| emp_id | salary | dept_name | sal_rank |
++--------+--------+-----------+----------+
+|      5 |  15000 | Finance   |        1 |
+|      6 |  15000 | Finance   |        2 |
+|      8 |  12000 | HR        |        1 |
+|      9 |  12000 | HR        |        2 |
+|     10 |  11000 | HR        |        3 |
+|      7 |  15000 | IT        |        1 |
+|      2 |  11000 | Software  |        1 |
+|      3 |  11000 | Software  |        2 |
+|      4 |  11000 | Software  |        3 |
+|      1 |  10000 | Software  |        4 |
++--------+--------+-----------+----------+
+10 rows in set (0.00 sec)
+
+mysql> select * from employeeesss;
++--------+--------+-----------+
+| emp_id | salary | dept_name |
++--------+--------+-----------+
+|      1 |  10000 | Software  |
+|      2 |  11000 | Software  |
+|      3 |  11000 | Software  |
+|      4 |  11000 | Software  |
+|      5 |  15000 | Finance   |
+|      6 |  15000 | Finance   |
+|      7 |  15000 | IT        |
+|      8 |  12000 | HR        |
+|      9 |  12000 | HR        |
+|     10 |  11000 | HR        |
++--------+--------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> # Query - get all top 2 ranked employeeessss from each department who are getting maximum salaryselect
+mysql> # Query - get all employeeessss from each department who are getting maximum salaryselect
+mysql> select * from(select *,rank() over(partition by dept_name order by salary desc) as sal_rank from employeeesss) as temp where sal_rank=1;
++--------+--------+-----------+----------+
+| emp_id | salary | dept_name | sal_rank |
++--------+--------+-----------+----------+
+|      5 |  15000 | Finance   |        1 |
+|      6 |  15000 | Finance   |        1 |
+|      8 |  12000 | HR        |        1 |
+|      9 |  12000 | HR        |        1 |
+|      7 |  15000 | IT        |        1 |
+|      2 |  11000 | Software  |        1 |
+|      3 |  11000 | Software  |        1 |
+|      4 |  11000 | Software  |        1 |
++--------+--------+-----------+----------+
+8 rows in set (0.00 sec)
+
+mysql> # Query - get all top 2 ranked employeeessss from each department who are getting maximum salary
+mysql> select * from(select *,rank() over(partition by dept_name order by salary desc) as sal_rank from employeeesss limit 2) as temp where sal_rank=1;
++--------+--------+-----------+----------+
+| emp_id | salary | dept_name | sal_rank |
++--------+--------+-----------+----------+
+|      5 |  15000 | Finance   |        1 |
+|      6 |  15000 | Finance   |        1 |
++--------+--------+-----------+----------+
+2 rows in set (0.00 sec)
+
+mysql> select * from(select *,dense_rank() over(partition by dept_name order by salary desc) as sal_rank from employeeesss) as temp where sal_rank<=2;
++--------+--------+-----------+----------+
+| emp_id | salary | dept_name | sal_rank |
++--------+--------+-----------+----------+
+|      5 |  15000 | Finance   |        1 |
+|      6 |  15000 | Finance   |        1 |
+|      8 |  12000 | HR        |        1 |
+|      9 |  12000 | HR        |        1 |
+|     10 |  11000 | HR        |        2 |
+|      7 |  15000 | IT        |        1 |
+|      2 |  11000 | Software  |        1 |
+|      3 |  11000 | Software  |        1 |
+|      4 |  11000 | Software  |        1 |
+|      1 |  10000 | Software  |        2 |
++--------+--------+-----------+----------+
+10 rows in set (0.00 sec)
+
+mysql> #lag() and lead()
+mysql> create table daily_sales(sales_date date,sales_amount int);
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> insert into daily_sales values('2022-03-11',400);insert into daily_sales values('2022-03-12',500);insert into daily_sales values('2022-03-13',300);insert into daily_sales values('2022-03-14',600);insert into daily_sales values('2022-03-15',500);insert into daily_sales values('2022-03-16',200);
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from daily_sales;
++------------+--------------+
+| sales_date | sales_amount |
++------------+--------------+
+| 2022-03-11 |          400 |
+| 2022-03-12 |          500 |
+| 2022-03-13 |          300 |
+| 2022-03-14 |          600 |
+| 2022-03-15 |          500 |
+| 2022-03-16 |          200 |
++------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql> select *,
+    -> lag(sales_amount,1) over(order by sales_date) as prev_sales from daily_sales;
++------------+--------------+------------+
+| sales_date | sales_amount | prev_sales |
++------------+--------------+------------+
+| 2022-03-11 |          400 |       NULL |
+| 2022-03-12 |          500 |        400 |
+| 2022-03-13 |          300 |        500 |
+| 2022-03-14 |          600 |        300 |
+| 2022-03-15 |          500 |        600 |
+| 2022-03-16 |          200 |        500 |
++------------+--------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> lead(sales_amount,1) over(order by sales_date) as prev_sales from daily_sales;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'lead(sales_amount,1) over(order by sales_date) as prev_sales from daily_sales' at line 1
+mysql> select *,
+    -> lead(sales_amount,1) over(order by sales_date) as prev_sales from daily_sales;
++------------+--------------+------------+
+| sales_date | sales_amount | prev_sales |
++------------+--------------+------------+
+| 2022-03-11 |          400 |        500 |
+| 2022-03-12 |          500 |        300 |
+| 2022-03-13 |          300 |        600 |
+| 2022-03-14 |          600 |        500 |
+| 2022-03-15 |          500 |        200 |
+| 2022-03-16 |          200 |       NULL |
++------------+--------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> select *,
+    -> coalesce(lag(sales_amount,1) over(order by sales_date),0) as prev_sales from daily_sales;
++------------+--------------+------------+
+| sales_date | sales_amount | prev_sales |
++------------+--------------+------------+
+| 2022-03-11 |          400 |          0 |
+| 2022-03-12 |          500 |        400 |
+| 2022-03-13 |          300 |        500 |
+| 2022-03-14 |          600 |        300 |
+| 2022-03-15 |          500 |        600 |
+| 2022-03-16 |          200 |        500 |
++------------+--------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> #above is an example of replacing null values
+mysql>
+mysql> select sales_date,sales_amount as current_day_sales,
+    -> coalesce(lag(sales_amount over(order by sales_date),0) as prev_day_sales
+    -> from daily_sales;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'over(order by sales_date),0) as prev_day_sales
+from daily_sales' at line 2
+mysql> select sales_date,sales_amount as current_day_sales,
+    -> coalesce(lag(sales_amount) over(order by sales_date),0) as prev_day_sales
+    -> from daily_sales;
++------------+-------------------+----------------+
+| sales_date | current_day_sales | prev_day_sales |
++------------+-------------------+----------------+
+| 2022-03-11 |               400 |              0 |
+| 2022-03-12 |               500 |            400 |
+| 2022-03-13 |               300 |            500 |
+| 2022-03-14 |               600 |            300 |
+| 2022-03-15 |               500 |            600 |
+| 2022-03-16 |               200 |            500 |
++------------+-------------------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> select *,(current_day_sales - prev_day_sales) as sales_diff
+    -> from(select sales_date , sales_amount as current_day_sales,coalesce(lag(sales_amount,1) over(order by sales_date),0) as prev_day_sales from daily_sales) tmp;
++------------+-------------------+----------------+------------+
+| sales_date | current_day_sales | prev_day_sales | sales_diff |
++------------+-------------------+----------------+------------+
+| 2022-03-11 |               400 |              0 |        400 |
+| 2022-03-12 |               500 |            400 |        100 |
+| 2022-03-13 |               300 |            500 |       -200 |
+| 2022-03-14 |               600 |            300 |        300 |
+| 2022-03-15 |               500 |            600 |       -100 |
+| 2022-03-16 |               200 |            500 |       -300 |
++------------+-------------------+----------------+------------+
+6 rows in set (0.01 sec)
+
+mysql>  select *,(current_day_sales - prev_day_sales) as sales_diff
+    -> from(select sales_date , sales_amount as current_day_sales,coalesce(lag(sales_amount,1) over(order by sales_date),0) as prev_day_sales from daily_sales) as tmp;
++------------+-------------------+----------------+------------+
+| sales_date | current_day_sales | prev_day_sales | sales_diff |
++------------+-------------------+----------------+------------+
+| 2022-03-11 |               400 |              0 |        400 |
+| 2022-03-12 |               500 |            400 |        100 |
+| 2022-03-13 |               300 |            500 |       -200 |
+| 2022-03-14 |               600 |            300 |        300 |
+| 2022-03-15 |               500 |            600 |       -100 |
+| 2022-03-16 |               200 |            500 |       -300 |
++------------+-------------------+----------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> #short
+mysql> select sales_date,sales_amount as current_day_sales,coalesec(lag(sales_amount,1) over(sales_date order by),0) as prev_day_sales,(current_day_sales - prev_day_sales) as sales_diff
+    -> from daily_sales;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '),0) as prev_day_sales,(current_day_sales - prev_day_sales) as sales_diff
+from d' at line 1
+mysql> select sales_date,sales_amount as current_day_sales,coalesec(lag(sales_amount,1) over(sales_date order by),0) as prev_day_sales,(sales_amount - coalesec(lag(sales_amount,1) over(sales_date order by),0)) as sales_diff from daily_sales;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '),0) as prev_day_sales,(sales_amount - coalesec(lag(sales_amount,1) over(sales_d' at line 1
+mysql> select sales_date,sales_amount as current_day_sales,coalesec(lag(sales_amount,1) over(order by sales_date),0) as prev_day_sales,(sales_amount - coalesec(lag(sales_amount,1) over(sales_date order by),0)) as sales_diff from daily_sales;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '),0)) as sales_diff from daily_sales' at line 1
+mysql> select sales_date,sales_amount as current_day_sales,coalesce(lag(sales_amount,1) over(order by sales_date),0) as prev_day_sales,(sales_amount - coalesce(lag(sales_amount,1) over(sales_date order by),0)) as sales_diff from daily_sales;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '),0)) as sales_diff from daily_sales' at line 1
+mysql> select sales_date,sales_amount as current_day_sales,coalesce(lag(sales_amount,1) over(order by sales_date),0) as prev_day_sales,(sales_amount - coalesce(lag(sales_amount,1) over(order by sales_date),0)) as sales_diff from daily_sales;
++------------+-------------------+----------------+------------+
+| sales_date | current_day_sales | prev_day_sales | sales_diff |
++------------+-------------------+----------------+------------+
+| 2022-03-11 |               400 |              0 |        400 |
+| 2022-03-12 |               500 |            400 |        100 |
+| 2022-03-13 |               300 |            500 |       -200 |
+| 2022-03-14 |               600 |            300 |        300 |
+| 2022-03-15 |               500 |            600 |       -100 |
+| 2022-03-16 |               200 |            500 |       -300 |
++------------+-------------------+----------------+------------+
+6 rows in set (0.00 sec)
+
+mysql> #lead()
+mysql> select sales_date,sales_amount as current_day_sales,coalesce(lead(sales_amount,1) over(order by sales_date),999999999) as next_day_sales from daily_sales;
++------------+-------------------+----------------+
+| sales_date | current_day_sales | next_day_sales |
++------------+-------------------+----------------+
+| 2022-03-11 |               400 |            500 |
+| 2022-03-12 |               500 |            300 |
+| 2022-03-13 |               300 |            600 |
+| 2022-03-14 |               600 |            500 |
+| 2022-03-15 |               500 |            200 |
+| 2022-03-16 |               200 |      999999999 |
++------------+-------------------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> show tables;
++--------------------------------+
+| Tables_in_test                 |
++--------------------------------+
+| amazon_sales_data              |
+| customer                       |
+| customers                      |
+| daily_sales                    |
+| ecom_data                      |
+| employee                       |
+| employee_with_comnstraints     |
+| employee_with_constraints_temp |
+| employeees                     |
+| employeeesss                   |
+| employees                      |
+| employees_full_data            |
+| employeess                     |
+| orders                         |
+| orders_data                    |
+| person                         |
+| shippers                       |
+| shop_sales_data                |
+| students                       |
+| tree                           |
++--------------------------------+
+20 rows in set (0.03 sec)
+
+mysql> #data leaks - mostly internal employees
+mysql> create table employeeeessss(  emp_id int,  emp_name varchar(50),  mobile BIGINT,  dept_name varchar(50),  salary int );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> insert into employeeeessss values(1,'Shashank',778768768,'Software',1000);insert into employeeeessss values(2,'Rahul',876778877,'IT',2000);insert into employeeeessss values(3,'Amit',098798998,'HR',5000);insert into employeeeessss values(4,'Nikhil',67766767,'IT',3000);
+Query OK, 1 row affected (0.04 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from employeeeessss;
++--------+----------+-----------+-----------+--------+
+| emp_id | emp_name | mobile    | dept_name | salary |
++--------+----------+-----------+-----------+--------+
+|      1 | Shashank | 778768768 | Software  |   1000 |
+|      2 | Rahul    | 876778877 | IT        |   2000 |
+|      3 | Amit     |  98798998 | HR        |   5000 |
+|      4 | Nikhil   |  67766767 | IT        |   3000 |
++--------+----------+-----------+-----------+--------+
+4 rows in set (0.00 sec)
+
+mysql> #hiding emp mobile
+mysql> create view emp_salary_info as select emp_id,emp_name,salary from employeeeessss;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> show tables;
++--------------------------------+
+| Tables_in_test                 |
++--------------------------------+
+| amazon_sales_data              |
+| customer                       |
+| customers                      |
+| daily_sales                    |
+| ecom_data                      |
+| emp_salary_info                |
+| employee                       |
+| employee_with_comnstraints     |
+| employee_with_constraints_temp |
+| employeeeessss                 |
+| employeees                     |
+| employeeesss                   |
+| employees                      |
+| employees_full_data            |
+| employeess                     |
+| orders                         |
+| orders_data                    |
+| person                         |
+| shippers                       |
+| shop_sales_data                |
+| students                       |
+| tree                           |
++--------------------------------+
+22 rows in set (0.00 sec)
+
+mysql> select * from emp_salary_info;
++--------+----------+--------+
+| emp_id | emp_name | salary |
++--------+----------+--------+
+|      1 | Shashank |   1000 |
+|      2 | Rahul    |   2000 |
+|      3 | Amit     |   5000 |
+|      4 | Nikhil   |   3000 |
++--------+----------+--------+
+4 rows in set (0.01 sec)
+
+mysql> #our target table will be hit again and again
+mysql> create view department_wise_salary dept_name , sum(salary) from employeeeessss group by dept_name;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_name , sum(salary) from employeeeessss group by dept_name' at line 1
+mysql> create view department_wise_salary dept_name, sum(salary) from employeeeessss group by dept_name;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_name, sum(salary) from employeeeessss group by dept_name' at line 1
+mysql> create view department_wise_salary as select dept_name, sum(salary) from employeeeessss group by dept_name;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from department_wise_salary;
++-----------+-------------+
+| dept_name | sum(salary) |
++-----------+-------------+
+| Software  |        1000 |
+| IT        |        5000 |
+| HR        |        5000 |
++-----------+-------------+
+3 rows in set (0.00 sec)
