@@ -1,0 +1,662 @@
+Enter password: *************
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 15
+Server version: 8.0.30 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sql_assignment1    |
+| sys                |
+| test               |
++--------------------+
+6 rows in set (0.03 sec)
+
+mysql> use test;
+Database changed
+mysql> show tables;
++--------------------------------+
+| Tables_in_test                 |
++--------------------------------+
+| amazon_sales_data              |
+| customer                       |
+| customers                      |
+| daily_sales                    |
+| department_wise_salary         |
+| ecom_data                      |
+| emp_salary_info                |
+| employee                       |
+| employee_with_comnstraints     |
+| employee_with_constraints_temp |
+| employeeeessss                 |
+| employeees                     |
+| employeeesss                   |
+| employees                      |
+| employees_full_data            |
+| employeess                     |
+| orders                         |
+| orders_data                    |
+| person                         |
+| shippers                       |
+| shop_sales_data                |
+| students                       |
+| tree                           |
++--------------------------------+
+23 rows in set (0.03 sec)
+
+mysql> select * from daily_sales;
++------------+--------------+
+| sales_date | sales_amount |
++------------+--------------+
+| 2022-03-11 |          400 |
+| 2022-03-12 |          500 |
+| 2022-03-13 |          300 |
+| 2022-03-14 |          600 |
+| 2022-03-15 |          500 |
+| 2022-03-16 |          200 |
++------------+--------------+
+6 rows in set (0.04 sec)
+
+mysql> #at any point of time we are at a particular row ,i want sum of sales of last two days sales
+mysql> select * , sum(sales_amount) over(order by sales_date rows between 1 preceding and 1 following) as prev_and_next_sale_sum from daily_sales;
++------------+--------------+------------------------+
+| sales_date | sales_amount | prev_and_next_sale_sum |
++------------+--------------+------------------------+
+| 2022-03-11 |          400 |                    900 |
+| 2022-03-12 |          500 |                   1200 |
+| 2022-03-13 |          300 |                   1400 |
+| 2022-03-14 |          600 |                   1400 |
+| 2022-03-15 |          500 |                   1300 |
+| 2022-03-16 |          200 |                    700 |
++------------+--------------+------------------------+
+6 rows in set (0.04 sec)
+
+mysql> select * , sum(sales_amount) over(order by sales_date rows between 1 preceding and 2 following) as prev_and_next_sale_sum from daily_sales;
++------------+--------------+------------------------+
+| sales_date | sales_amount | prev_and_next_sale_sum |
++------------+--------------+------------------------+
+| 2022-03-11 |          400 |                   1200 |
+| 2022-03-12 |          500 |                   1800 |
+| 2022-03-13 |          300 |                   1900 |
+| 2022-03-14 |          600 |                   1600 |
+| 2022-03-15 |          500 |                   1300 |
+| 2022-03-16 |          200 |                    700 |
++------------+--------------+------------------------+
+6 rows in set (0.00 sec)
+
+mysql> #in one direction
+mysql> #from upwards
+mysql> select * , sum(sales_amount) over(order by sales_date rows between 1 preceding and current row) as prev_and_next_sale_sum from daily_sales;
++------------+--------------+------------------------+
+| sales_date | sales_amount | prev_and_next_sale_sum |
++------------+--------------+------------------------+
+| 2022-03-11 |          400 |                    400 |
+| 2022-03-12 |          500 |                    900 |
+| 2022-03-13 |          300 |                    800 |
+| 2022-03-14 |          600 |                    900 |
+| 2022-03-15 |          500 |                   1100 |
+| 2022-03-16 |          200 |                    700 |
++------------+--------------+------------------------+
+6 rows in set (0.04 sec)
+
+mysql> #downwards
+mysql> select * , sum(sales_amount) over(order by sales_date rows between current row and 1 following) as prev_and_next_sale_sum from daily_sales;
++------------+--------------+------------------------+
+| sales_date | sales_amount | prev_and_next_sale_sum |
++------------+--------------+------------------------+
+| 2022-03-11 |          400 |                    900 |
+| 2022-03-12 |          500 |                    800 |
+| 2022-03-13 |          300 |                    900 |
+| 2022-03-14 |          600 |                   1100 |
+| 2022-03-15 |          500 |                    700 |
+| 2022-03-16 |          200 |                    200 |
++------------+--------------+------------------------+
+6 rows in set (0.04 sec)
+
+mysql> select * , sum(sales_amount) over(order by sales_date rows between 1 following and 1 preceding) as prev_and_next_sale_sum from daily_sales;
+ERROR 3586 (HY000): Window '<unnamed window>': frame start or end is negative, NULL or of non-integral type
+mysql> #limit boundaries from current to all way to upwards
+mysql> select * , sum(sales_amount) over(order by sales_date rows between unbounded and current row) as prev_and_next_sale_sum from daily_sales;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'and current row) as prev_and_next_sale_sum from daily_sales' at line 1
+mysql> select * , sum(sales_amount) over(order by sales_date rows between unbounded precedingand current row) as prev_and_next_sale_sum from daily_sales;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'precedingand current row) as prev_and_next_sale_sum from daily_sales' at line 1
+mysql> select * , sum(sales_amount) over(order by sales_date rows between unbounded preceding and current row) as prev_and_next_sale_sum from daily_sales;
++------------+--------------+------------------------+
+| sales_date | sales_amount | prev_and_next_sale_sum |
++------------+--------------+------------------------+
+| 2022-03-11 |          400 |                    400 |
+| 2022-03-12 |          500 |                    900 |
+| 2022-03-13 |          300 |                   1200 |
+| 2022-03-14 |          600 |                   1800 |
+| 2022-03-15 |          500 |                   2300 |
+| 2022-03-16 |          200 |                   2500 |
++------------+--------------+------------------------+
+6 rows in set (0.00 sec)
+
+mysql> #above is rolling sum
+mysql> select * , sum(sales_amount) over(order by sales_date rows between current row and unbounded following) as prev_and_next_sale_sum from daily_sales;
++------------+--------------+------------------------+
+| sales_date | sales_amount | prev_and_next_sale_sum |
++------------+--------------+------------------------+
+| 2022-03-11 |          400 |                   2500 |
+| 2022-03-12 |          500 |                   2100 |
+| 2022-03-13 |          300 |                   1600 |
+| 2022-03-14 |          600 |                   1300 |
+| 2022-03-15 |          500 |                    700 |
+| 2022-03-16 |          200 |                    200 |
++------------+--------------+------------------------+
+6 rows in set (0.04 sec)
+
+mysql> select * , sum(sales_amount) over(order by sales_date rows between unbounded preceding and unbounded following) as prev_and_next_sale_sum from daily_sales;
++------------+--------------+------------------------+
+| sales_date | sales_amount | prev_and_next_sale_sum |
++------------+--------------+------------------------+
+| 2022-03-11 |          400 |                   2500 |
+| 2022-03-12 |          500 |                   2500 |
+| 2022-03-13 |          300 |                   2500 |
+| 2022-03-14 |          600 |                   2500 |
+| 2022-03-15 |          500 |                   2500 |
+| 2022-03-16 |          200 |                   2500 |
++------------+--------------+------------------------+
+6 rows in set (0.00 sec)
+
+mysql> insert into daily_sales values('2022-03-20',900);
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into daily_sales values('2022-03-23',200);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into daily_sales values('2022-03-25',300);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into daily_sales values('2022-03-29',250);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from daily_sales;
++------------+--------------+
+| sales_date | sales_amount |
++------------+--------------+
+| 2022-03-11 |          400 |
+| 2022-03-12 |          500 |
+| 2022-03-13 |          300 |
+| 2022-03-14 |          600 |
+| 2022-03-15 |          500 |
+| 2022-03-16 |          200 |
+| 2022-03-20 |          900 |
+| 2022-03-23 |          200 |
+| 2022-03-25 |          300 |
+| 2022-03-29 |          250 |
++------------+--------------+
+10 rows in set (0.00 sec)
+
+mysql> #write a query to calculate weekly rolling sum of sales__amount
+mysql> #range between
+mysql> select *,sum(sales_amount) over(order by sales_amount range between 100 preceding and 200 following) as prev_next_sales from daily_sales;
++------------+--------------+-----------------+
+| sales_date | sales_amount | prev_next_sales |
++------------+--------------+-----------------+
+| 2022-03-16 |          200 |            1650 |
+| 2022-03-23 |          200 |            1650 |
+| 2022-03-29 |          250 |            1650 |
+| 2022-03-13 |          300 |            2650 |
+| 2022-03-25 |          300 |            2650 |
+| 2022-03-11 |          400 |            2600 |
+| 2022-03-12 |          500 |            2000 |
+| 2022-03-15 |          500 |            2000 |
+| 2022-03-14 |          600 |            1600 |
+| 2022-03-20 |          900 |             900 |
++------------+--------------+-----------------+
+10 rows in set (0.01 sec)
+
+mysql> #write a query to calculate weekly rolling sum of sales__amount
+mysql> select *,sum(sales_amount) over(order by sales_date range between interval '6' day and current row) as prev_next_sales from daily_sales;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'and current row) as prev_next_sales from daily_sales' at line 1
+mysql> select *,sum(sales_amount) over(order by sales_date range between interval '6' day preceding and current row) as prev_next_sales from daily_sales;
++------------+--------------+-----------------+
+| sales_date | sales_amount | prev_next_sales |
++------------+--------------+-----------------+
+| 2022-03-11 |          400 |             400 |
+| 2022-03-12 |          500 |             900 |
+| 2022-03-13 |          300 |            1200 |
+| 2022-03-14 |          600 |            1800 |
+| 2022-03-15 |          500 |            2300 |
+| 2022-03-16 |          200 |            2500 |
+| 2022-03-20 |          900 |            2200 |
+| 2022-03-23 |          200 |            1100 |
+| 2022-03-25 |          300 |            1400 |
+| 2022-03-29 |          250 |             750 |
++------------+--------------+-----------------+
+10 rows in set (0.00 sec)
+
+mysql> #common table expression
+mysql> create table amazon_employees(
+    ->     emp_id int,
+    ->     emp_name varchar(20),
+    ->     dept_id int,
+    ->     salary int
+    ->
+    ->  );
+Query OK, 0 rows affected (0.17 sec)
+
+mysql> insert into amazon_employees values(1,'Shashank', 100, 10000);
+Query OK, 1 row affected (0.01 sec)
+
+mysql>  insert into amazon_employees values(2,'Rahul', 100, 20000);
+Query OK, 1 row affected (0.00 sec)
+
+mysql>  insert into amazon_employees values(3,'Amit', 101, 15000);
+Query OK, 1 row affected (0.00 sec)
+
+mysql>  insert into amazon_employees values(4,'Mohit', 101, 17000);
+Query OK, 1 row affected (0.00 sec)
+
+mysql>  insert into amazon_employees values(5,'Nikhil', 102, 30000);
+Query OK, 1 row affected (0.00 sec)
+
+mysql>  create table department
+    ->  (
+    ->     dept_id int,
+    ->     dept_name varchar(20)
+    ->   );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql>  insert into department values(100, 'Software');
+Query OK, 1 row affected (0.01 sec)
+
+mysql>     insert into department values(101, 'HR');
+Query OK, 1 row affected (0.00 sec)
+
+mysql>       insert into department values(102, 'IT');
+Query OK, 1 row affected (0.00 sec)
+
+mysql>         insert into department values(103, 'Finance');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from amazon_employee;
+ERROR 1146 (42S02): Table 'test.amazon_employee' doesn't exist
+mysql> select * from amazon_employees;
++--------+----------+---------+--------+
+| emp_id | emp_name | dept_id | salary |
++--------+----------+---------+--------+
+|      1 | Shashank |     100 |  10000 |
+|      2 | Rahul    |     100 |  20000 |
+|      3 | Amit     |     101 |  15000 |
+|      4 | Mohit    |     101 |  17000 |
+|      5 | Nikhil   |     102 |  30000 |
++--------+----------+---------+--------+
+5 rows in set (0.00 sec)
+
+mysql> select * from department;
++---------+-----------+
+| dept_id | dept_name |
++---------+-----------+
+|     100 | Software  |
+|     101 | HR        |
+|     102 | IT        |
+|     103 | Finance   |
++---------+-----------+
+4 rows in set (0.00 sec)
+
+mysql> select a.emp_name,d.dept_id,d.salary from amaxon_employee a inner join department d on a.dept_id=d.dept_id;
+ERROR 1146 (42S02): Table 'test.amaxon_employee' doesn't exist
+mysql> select a.emp_name,d.dept_id,d.salary from amazon_employees a inner join department d on a.dept_id=d.dept_id;
+ERROR 1054 (42S22): Unknown column 'd.salary' in 'field list'
+mysql> select a.emp_name,d.dept_id,a.salary from amazon_employees a inner join department d on a.dept_id=d.dept_id;
++----------+---------+--------+
+| emp_name | dept_id | salary |
++----------+---------+--------+
+| Shashank |     100 |  10000 |
+| Rahul    |     100 |  20000 |
+| Amit     |     101 |  15000 |
+| Mohit    |     101 |  17000 |
+| Nikhil   |     102 |  30000 |
++----------+---------+--------+
+5 rows in set (0.01 sec)
+
+mysql> select d.dept_name,d.dept_id,a.salary from amazon_employees a inner join department d on a.dept_id=d.dept_id;
++-----------+---------+--------+
+| dept_name | dept_id | salary |
++-----------+---------+--------+
+| Software  |     100 |  10000 |
+| Software  |     100 |  20000 |
+| HR        |     101 |  15000 |
+| HR        |     101 |  17000 |
+| IT        |     102 |  30000 |
++-----------+---------+--------+
+5 rows in set (0.01 sec)
+
+mysql> select *,sum(salary) over(partiton by dept_name) from (select d.dept_name,d.dept_id,a.salary from amazon_employees a inner join department d on a.dept_id=d.dept_id) tmp;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'by dept_name) from (select d.dept_name,d.dept_id,a.salary from amazon_employees ' at line 1
+mysql> select *,sum(salary) over(partition by dept_name) from (select d.dept_name,d.dept_id,a.salary from amazon_employees a inner join department d on a.dept_id=d.dept_id) tmp;
++-----------+---------+--------+------------------------------------------+
+| dept_name | dept_id | salary | sum(salary) over(partition by dept_name) |
++-----------+---------+--------+------------------------------------------+
+| HR        |     101 |  15000 |                                    32000 |
+| HR        |     101 |  17000 |                                    32000 |
+| IT        |     102 |  30000 |                                    30000 |
+| Software  |     100 |  10000 |                                    30000 |
+| Software  |     100 |  20000 |                                    30000 |
++-----------+---------+--------+------------------------------------------+
+5 rows in set (0.04 sec)
+
+mysql> select *,rank() sum(salary) over(partition by dept_name) as dept_wise_max_salary from (select d.dept_name,d.dept_id,a.salary from amazon_employees a inner join department d on a.dept_id=d.dept_id) tmp;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'sum(salary) over(partition by dept_name) as dept_wise_max_salary from (select d.' at line 1
+mysql> select *,rank() over(partition by dept_name) as dept_wise_max_salary from (select d.dept_name,d.dept_id,a.salary from amazon_employees a inner join department d on a.dept_id=d.dept_id) tmp;
++-----------+---------+--------+----------------------+
+| dept_name | dept_id | salary | dept_wise_max_salary |
++-----------+---------+--------+----------------------+
+| HR        |     101 |  15000 |                    1 |
+| HR        |     101 |  17000 |                    1 |
+| IT        |     102 |  30000 |                    1 |
+| Software  |     100 |  10000 |                    1 |
+| Software  |     100 |  20000 |                    1 |
++-----------+---------+--------+----------------------+
+5 rows in set (0.00 sec)
+
+mysql> select *,sum(salary) over(partition by dept_name) from (select d.dept_name,d.dept_id,a.salary from amazon_employees a inner join department d on a.dept_id=d.dept_id) tmp;
++-----------+---------+--------+------------------------------------------+
+| dept_name | dept_id | salary | sum(salary) over(partition by dept_name) |
++-----------+---------+--------+------------------------------------------+
+| HR        |     101 |  15000 |                                    32000 |
+| HR        |     101 |  17000 |                                    32000 |
+| IT        |     102 |  30000 |                                    30000 |
+| Software  |     100 |  10000 |                                    30000 |
+| Software  |     100 |  20000 |                                    30000 |
++-----------+---------+--------+------------------------------------------+
+5 rows in set (0.00 sec)
+
+mysql> select d.dept_name,d.dept_id,a.salary from amazon_employees a inner join department d on a.dept_id=d.dept_id;
++-----------+---------+--------+
+| dept_name | dept_id | salary |
++-----------+---------+--------+
+| Software  |     100 |  10000 |
+| Software  |     100 |  20000 |
+| HR        |     101 |  15000 |
+| HR        |     101 |  17000 |
+| IT        |     102 |  30000 |
++-----------+---------+--------+
+5 rows in set (0.00 sec)
+
+mysql> select d.dept_name,sum(a.salary) from amazon_employees a inner join department d on a.dept_id=d.dept_id;
+ERROR 1140 (42000): In aggregated query without GROUP BY, expression #1 of SELECT list contains nonaggregated column 'test.d.dept_name'; this is incompatible with sql_mode=only_full_group_by
+mysql> select d.dept_name,sum(a.salary) from amazon_employees a inner join department d on a.dept_id=d.dept_id group by d.dept_name;
++-----------+---------------+
+| dept_name | sum(a.salary) |
++-----------+---------------+
+| Software  |         30000 |
+| HR        |         32000 |
+| IT        |         30000 |
++-----------+---------------+
+3 rows in set (0.00 sec)
+
+mysql> select d.dept_name,sum(a.salary) as dept_wise_salary from amazon_employees a inner join department d on a.dept_id=d.dept_id group by d.dept_name;
++-----------+------------------+
+| dept_name | dept_wise_salary |
++-----------+------------------+
+| Software  |            30000 |
+| HR        |            32000 |
+| IT        |            30000 |
++-----------+------------------+
+3 rows in set (0.00 sec)
+
+mysql> #or
+mysql> #solving above using CTE
+mysql> with dept_wise_salary as (select dept_id,sum(salary) as total_salary from amazon_employees groupby dept_id
+    -> select d.dept_name ,tmp.total_salary from dept_wise_salary tmp inner join department d on d.dept_id=tmp.dept_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id
+select d.dept_name ,tmp.total_salary from dept_wise_salary tmp inner joi' at line 1
+mysql> with dept_wise_salary as (select dept_id,sum(salary) as total_salary from amazon_employees groupby dept_id
+    -> select d.dept_name,tmp.total_salary from dept_wise_salary tmp inner join department d on d.dept_id=tmp.dept_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id
+select d.dept_name,tmp.total_salary from dept_wise_salary tmp inner join' at line 1
+mysql> with dept_wise_salary as (select dept_id,sum(salary) as total_salary from amazon_employees groupby dept_id
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id' at line 1
+mysql> with dept_wise_salary as (select dept_id,sum(salary) as total_salary from amazon_employees groupby dept_id)
+    -> select d.dept_name,tmp.total_salary from dept_wise_salary tmp inner join department d on d.dept_id=tmp.dept_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id)
+select d.dept_name,tmp.total_salary from dept_wise_salary tmp inner joi' at line 1
+mysql> with dept_wise_salary as (select dept_id,sum(salary) as total_salary from amazon_employees groupby dept_id)
+    ->
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id)' at line 1
+mysql> with dept_wise_salary as (select dept_id , sum(salary) as total_salary from amazon_employees group by dept_id)
+    ->
+    -> select d.dept_name, tmp.total_salary
+    -> from dept_wise_salary tmp
+    -> inner join department d on tmp.dept_id = d.dept_id;
++-----------+--------------+
+| dept_name | total_salary |
++-----------+--------------+
+| Software  |        30000 |
+| HR        |        32000 |
+| IT        |        30000 |
++-----------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> with dept_wise_salary as (select dept_id , sum(salary) as total_salary from amazon_employees group by dept_id)
+    ->
+    -> select d.dept_name,tmp.total_salary from dept_wise_salary tmp inner join department d on d.dept_id=tmp.dept_id;
++-----------+--------------+
+| dept_name | total_salary |
++-----------+--------------+
+| Software  |        30000 |
+| HR        |        32000 |
+| IT        |        30000 |
++-----------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> with dept_wise_salary as (select dept_id,sum(salary) as total_salary from amazon_employees groupby dept_id)
+    -> select d.dept_name,tmp.total_salary from dept_wise_salary tmp inner join department d on d.dept_id=tmp.dept_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id)
+select d.dept_name,tmp.total_salary from dept_wise_salary tmp inner joi' at line 1
+mysql> with dept_wise_salary as (select dept_id,sum(salary) as total_salary from amazon_employees groupby dept_id),dept_wise_max_salary as (select dept_id,max(salary) as max_salary from amazon_employees group by dept_id)
+    ->
+    -> select * from dept_wise_max_salary;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id),dept_wise_max_salary as (select dept_id,max(salary) as max_salary from ' at line 1
+mysql> with dept_wise_salary as (select dept_id, sum(salary) as total_salary from amazon_employees group by dept_id),dept_wise_max_salary as (select dept_id, max(salary) as max_salary from amazon_employees group by dept_id)
+    ->
+    -> select * from dept_wise_max_salary;
++---------+------------+
+| dept_id | max_salary |
++---------+------------+
+|     100 |      20000 |
+|     101 |      17000 |
+|     102 |      30000 |
++---------+------------+
+3 rows in set (0.00 sec)
+
+mysql> with dept_wise_salary as (select dept_id,sum(salary) as total_salary from amazon_employees groupby dept_id),dept_wise_max_salary as (select dept_id,max(salary) as max_salary from amazon_employees group by dept_id)
+    -> select * from dept_wise_max_salary;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id),dept_wise_max_salary as (select dept_id,max(salary) as max_salary from ' at line 1
+mysql> with dept_wise_salary as (select dept_id,sum(salary) as total_salary from amazon_employees groupby dept_id),dept_wise_max_salary as (select dept_id,max(salary) as max_salary from amazon_employees group by dept_id)
+    ->
+    -> select * from dept_wise_max_salary;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id),dept_wise_max_salary as (select dept_id,max(salary) as max_salary from ' at line 1
+mysql> with dept_wise_salary as (select dept_id, sum(salary) as total_salary from amazon_employees groupby dept_id),dept_wise_max_salary as (select dept_id, max(salary) as max_salary from amazon_employees group by dept_id)
+    -> select * from dept_wise_max_salary;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id),dept_wise_max_salary as (select dept_id, max(salary) as max_salary from' at line 1
+mysql> with dept_wise_salary as (select dept_id, sum(salary) as total_salary from amazon_employees groupby dept_id),dept_wise_max_salary as (select dept_id, max(salary) as max_salary from amazon_employees group by dept_id)
+    ->
+    -> select * from dept_wise_max_salary;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dept_id),dept_wise_max_salary as (select dept_id, max(salary) as max_salary from' at line 1
+mysql>
+mysql>
+mysql>
+mysql>
+mysql>
+mysql> with dept_wise_salary as (select dept_id, sum(salary) as total_salary from amazon_employees group by dept_id),dept_wise_max_salary as (select dept_id, max(salary) as max_salary from amazon_employees group by dept_id)
+    -> select * from dept_wise_max_salary;
++---------+------------+
+| dept_id | max_salary |
++---------+------------+
+|     100 |      20000 |
+|     101 |      17000 |
+|     102 |      30000 |
++---------+------------+
+3 rows in set (0.00 sec)
+
+mysql> #views are still visible while cte not
+mysql>
+mysql>
+mysql> #recursive generator in sql
+mysql> #generate numbers from 1 to 10
+mysql> with recursive generate_number as (select 1 as n union select n+1 from generate_number where n<10) select * from generate_numbers;
+ERROR 1146 (42S02): Table 'test.generate_numbers' doesn't exist
+mysql> with recursive generate_number as (select 1 as n union select n+1 from generate_number where n<10) select * from generate_number;
++------+
+| n    |
++------+
+|    1 |
+|    2 |
+|    3 |
+|    4 |
+|    5 |
+|    6 |
+|    7 |
+|    8 |
+|    9 |
+|   10 |
++------+
+10 rows in set (0.00 sec)
+
+mysql> with recursive generate_number as (select 1 as n union select n+1 from generate_number where n<10) select * from generate_number;
++------+
+| n    |
++------+
+|    1 |
+|    2 |
+|    3 |
+|    4 |
+|    5 |
+|    6 |
+|    7 |
+|    8 |
+|    9 |
+|   10 |
++------+
+10 rows in set (0.01 sec)
+
+mysql> with recursive generate_number as (select 1 as n union select n+1 from generate_number where n<10) select * from generate_number
+    -> ;
++------+
+| n    |
++------+
+|    1 |
+|    2 |
+|    3 |
+|    4 |
+|    5 |
+|    6 |
+|    7 |
+|    8 |
+|    9 |
+|   10 |
++------+
+10 rows in set (0.00 sec)
+
+mysql> with recursive fact_num as (select 1 as n union select n*1 from fact_num where n<=n) select * from fact_num;
++------+
+| n    |
++------+
+|    1 |
++------+
+1 row in set (0.00 sec)
+
+mysql> with recursive fact_num as (select 1 as n union select n*1 from fact_num where n<=5) select * from fact_num;
++------+
+| n    |
++------+
+|    1 |
++------+
+1 row in set (0.00 sec)
+
+mysql> create table emp_mgr
+    -> (
+    -> id int,
+    -> name varchar(50),
+    -> manager_id int,
+    -> designation varchar(50),
+    -> primary key (id)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> insert into emp_mgr values(1,'Shripath',null,'CEO');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into emp_mgr values(2,'Satya',5,'SDE');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into emp_mgr values(3,'Jia',5,'DA');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into emp_mgr values(4,'David',5,'DS');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into emp_mgr values(5,'Michael',7,'Manager');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into emp_mgr values(6,'Arvind',7,'Architect');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into emp_mgr values(7,'Asha',1,'CTO');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into emp_mgr values(8,'Maryam',1,'Manager');
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql>
+mysql> select * from emp_mgr;
++----+----------+------------+-------------+
+| id | name     | manager_id | designation |
++----+----------+------------+-------------+
+|  1 | Shripath |       NULL | CEO         |
+|  2 | Satya    |          5 | SDE         |
+|  3 | Jia      |          5 | DA          |
+|  4 | David    |          5 | DS          |
+|  5 | Michael  |          7 | Manager     |
+|  6 | Arvind   |          7 | Architect   |
+|  7 | Asha     |          1 | CTO         |
+|  8 | Maryam   |          1 | Manager     |
++----+----------+------------+-------------+
+8 rows in set (0.00 sec)
+
+mysql> #derive organization part for our CTO Asha
+mysql> with recursive emp_hir as (select id,name,manager_id,designation from emp_mgr where name = 'Asha' union select em.id,em.name,em.manager_id,em.designation from emp_hir eh inner join emp_mgr em on eh.id=em.manager_id) select * from emp_hir;
++------+---------+------------+-------------+
+| id   | name    | manager_id | designation |
++------+---------+------------+-------------+
+|    7 | Asha    |          1 | CTO         |
+|    5 | Michael |          7 | Manager     |
+|    6 | Arvind  |          7 | Architect   |
+|    2 | Satya   |          5 | SDE         |
+|    3 | Jia     |          5 | DA          |
+|    4 | David   |          5 | DS          |
++------+---------+------------+-------------+
+6 rows in set (0.02 sec)
+
+mysql> with recursive emp_hir as (select id,name,manager_id,designation,1 as lvl from emp_mgr where name = 'Asha' union select em.id,em.name,em.manager_id,em.designation,eh.lvl+1 as lvl from emp_hir eh inner join emp_mgr em on eh.id=em.manager_id) select * from emp_hir;
++------+---------+------------+-------------+------+
+| id   | name    | manager_id | designation | lvl  |
++------+---------+------------+-------------+------+
+|    7 | Asha    |          1 | CTO         |    1 |
+|    5 | Michael |          7 | Manager     |    2 |
+|    6 | Arvind  |          7 | Architect   |    2 |
+|    2 | Satya   |          5 | SDE         |    3 |
+|    3 | Jia     |          5 | DA          |    3 |
+|    4 | David   |          5 | DS          |    3 |
++------+---------+------------+-------------+------+
+6 rows in set (0.01 sec)
