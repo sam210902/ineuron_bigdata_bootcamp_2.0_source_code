@@ -44,31 +44,17 @@ mysql> describe employee;
 mysql> create table if not exists employee(id int,salary double,hiring_date date);
 Query OK, 0 rows affected, 1 warning (0.01 sec)
 
-mysql> create table if not exists employee_with_comnstraints(id int not null,salary double,hiring_date date default '2021-01-01',unique (id),check (salary > 1000);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
 mysql> create table if not exists employee_with_comnstraints(id int not null,salary double,hiring_date date default '2021-01-01',unique (id),check (salary > 1000));
 Query OK, 0 rows affected (0.07 sec)
 
-mysql> insert into employee_with_constraints(null,'Amit',3000,'2021-09-19');
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'null,'Amit',3000,'2021-09-19')' at line 1
-mysql> insert into employee_with_constraints(null,3000,'2021-09-19');
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'null,3000,'2021-09-19')' at line 1
-mysql> insert into employee_with_constraints(1,3000,'2021-09-19');
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1,3000,'2021-09-19')' at line 1
-mysql> insert into employee_with_constraints values(null,3000,'2021-09-19');
-ERROR 1146 (42S02): Table 'test.employee_with_constraints' doesn't exist
-mysql> insert into employee_with_comnstraints values(null,3000,'2021-09-19');
-ERROR 1048 (23000): Column 'id' cannot be null
 mysql> insert into employee_with_comnstraints values(1,3000,'2021-09-19');
 Query OK, 1 row affected (0.02 sec)
 
 mysql> insert into employee_with_comnstraints values(2,300,'2021-09-19');
-ERROR 3819 (HY000): Check constraint 'employee_with_comnstraints_chk_1' is violated.
 mysql> insert into employee_with_comnstraints values(2,3000,'2021-09-19');
 Query OK, 1 row affected (0.01 sec)
 
 mysql> select * from employee_with_comnstriants;
-ERROR 1146 (42S02): Table 'test.employee_with_comnstriants' doesn't exist
 mysql> select * from employee_with_comnstraints;
 +----+--------+-------------+
 | id | salary | hiring_date |
@@ -217,12 +203,12 @@ mysql> show create table employees;
 1 row in set (0.00 sec)
 
 mysql> #truncate table - it only deletes data but not table structure i.e schema will be there
+#syntax truncate table table_name;
 mysql> #drop table- it delete everything
 mysql> truncate table employees;
 Query OK, 0 rows affected (0.02 sec)
 
 mysql> select * from employyes;
-ERROR 1146 (42S02): Table 'test.employyes' doesn't exist
 mysql> select * from employees;
 Empty set (0.00 sec)
 
@@ -230,15 +216,11 @@ mysql> drop table employees;
 Query OK, 0 rows affected (0.01 sec)
 
 mysql> select * from employees;
-ERROR 1146 (42S02): Table 'test.employees' doesn't exist
 mysql> create table employees(id int,name varchar(50),address varchar(50),city varchar(50));
 Query OK, 0 rows affected (0.05 sec)
 
 mysql> insert into employees values(1,'Samarth','Bsr','BSR'),(2.'Shivam','SB','SB'),(3,'Aniket','MS','MS'),(4,'Sunil','DM','DM'),(5,'Krishan','SK','SK')
     -> ;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''Shivam','SB','SB'),(3,'Aniket','MS','MS'),(4,'Sunil','DM','DM'),(5,'Krishan','S' at line 1
-mysql> insert into employees values(1,'Samarth','Bsr','BSR'),(2.'Shivam','SB','SB'),(3,'Aniket','MS','MS'),(4,'Sunil','DM','DM'),(5,'Krishan','SK','SK');
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''Shivam','SB','SB'),(3,'Aniket','MS','MS'),(4,'Sunil','DM','DM'),(5,'Krishan','S' at line 1
 mysql> insert into employees values(1,'Samarth','Bsr','BSR'),(2,'Shivam','SB','SB'),(3,'Aniket','MS','MS'),(4,'Sunil','DM','DM'),(5,'Krishan','SK','SK');
 Query OK, 5 rows affected (0.01 sec)
 Records: 5  Duplicates: 0  Warnings: 0
@@ -256,16 +238,12 @@ mysql> select * from employees;
 5 rows in set (0.00 sec)
 
 mysql> #applying constraints
-mysql> alter table employees add constraints id_unique UNIQUE(id);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'id_unique UNIQUE(id)' at line 1
+mysql> alter table employees add constraint id_unique UNIQUE(id);
 mysql> alter table employees add constraint id_unique UNIQUE(id);
 Query OK, 0 rows affected (0.03 sec)
 Records: 0  Duplicates: 0  Warnings: 0
 
 mysql> insert into employees values(1,'Samarth','Bsr','BSR');
-ERROR 1062 (23000): Duplicate entry '1' for key 'employees.id_unique'
-
-
 
 
 --- drop constraint from existing TABLE
@@ -542,10 +520,6 @@ mysql> select count(*) from employees;
 1 row in set (0.00 sec)
 
 mysql> #limit records
-mysql> select * from emploees limit = 3;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '= 3' at line 1
-mysql> select * from employees limit = 3;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '= 3' at line 1
 mysql> select * from employees limit 3;
 +------+---------+------+-------------+--------+------+
 | id   | name    | age  | hiring_date | salary | city |
@@ -570,7 +544,6 @@ mysql> select salary from employees orderby;
 5 rows in set (0.00 sec)
 
 mysql> select salary from employees orderby=desc;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '=desc' at line 1
 mysql> select * from employees order by salary;
 +------+---------+------+-------------+--------+------+
 | id   | name    | age  | hiring_date | salary | city |
@@ -611,24 +584,6 @@ mysql> select * from employees order by age , salary desc
 
 mysql> write  a query to display the details of employee with max sal
     -> ;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'write  a query to display the details of employee with max sal' at line 1
-mysql> #write  a query to display the details of employee with max sal
-mysql> select * from employee max(salary);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'max(salary)' at line 1
-mysql> select * from employee where salary = max();
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 1
-mysql> select * from employee where salary = max;
-ERROR 1054 (42S22): Unknown column 'salary' in 'where clause'
-mysql> select * from employees where salary = max;
-ERROR 1054 (42S22): Unknown column 'max' in 'where clause'
-mysql> select * from employees where max(salary);
-ERROR 1111 (HY000): Invalid use of group function
-mysql> select * from employees order by desc limit 1;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'desc limit 1' at line 1
-mysql> select * from employees order by desc ,limit 1;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'desc ,limit 1' at line 1
-mysql> select * from employees order by salary desc ,limit 1;
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'limit 1' at line 1
 mysql> select * from employees order by salary desc limit 1;
 +------+---------+------+-------------+--------+------+
 | id   | name    | age  | hiring_date | salary | city |
